@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using static BASIC_Interpreter_Library.Constants;
 
 namespace BASIC_Interpreter_Library {
-    class Stack<T> {
+    public class Stack<T> {
         // массив элементов
         T[] st;
         // счетчик
@@ -15,8 +15,13 @@ namespace BASIC_Interpreter_Library {
         int depth;
         // нулевое значение класса
         T nill;
-
-        int N = MAX_STACK;
+        // максимальное количество элементов
+        int N;
+        // конструктор
+        public Stack(int N = MAX_STACK) {
+            this.N = N;
+            reset();
+        }
         // очищает объект
         void reset() {
             depth = count = 0;
@@ -30,7 +35,7 @@ namespace BASIC_Interpreter_Library {
             }
         }
         // проталкивает элемент
-        void push(T value) {
+        public void push(T value) {
             if (count >= N)
                 throw new Exception("ststack::push stack overflow");
             st[count++] = value;
@@ -38,7 +43,7 @@ namespace BASIC_Interpreter_Library {
                 depth = count;
         }
         // выталкивает элемент
-        T pop() {
+        public T pop() {
             if (count < 1)
                 throw new Exception("ststack::pop stack is empty");
             T value = st[--count];
@@ -46,7 +51,7 @@ namespace BASIC_Interpreter_Library {
             return value;
         }
         // выталкивает number элементов
-        T pop(int number) {
+        public T pop(int number) {
             if (count < number)
                 throw new Exception("ststack::pop(int) stack isn't so big as number");
             count -= number;
