@@ -16,17 +16,17 @@ namespace BASIC_Interpreter_Library {
         // вещественное значение
         private double dbl_val;
         // тип данных
-        Data_type data_type;
+        Data_type data_type_;
         // строковое значение
         public string str_val;
         public Token() {
             reset();
         }
         public void reset() {
-            stt = TOK_EOT;
+            Stt = TOK_EOT;
             int_val = 0;
             dbl_val = 0;
-            data_type = STDT_NULL;
+            data_type_ = STDT_NULL;
             str_val = "";
         }
         // добавляет символ
@@ -60,6 +60,14 @@ namespace BASIC_Interpreter_Library {
             }
             set {
                 dbl_val = value;
+            }
+        }
+        public Data_type Data_Type {
+            get {
+                return data_type_;
+            }
+            set {
+                data_type_ = value;
             }
         }
     }
