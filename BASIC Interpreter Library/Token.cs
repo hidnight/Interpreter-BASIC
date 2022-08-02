@@ -15,6 +15,8 @@ namespace BASIC_Interpreter_Library {
         private int int_val;
         // вещественное значение
         private double dbl_val;
+        // булево значение
+        private bool bool_val;
         // тип данных
         Data_type data_type_;
         // строковое значение
@@ -60,6 +62,14 @@ namespace BASIC_Interpreter_Library {
             }
             set {
                 dbl_val = value;
+            }
+        }
+        public bool Bool_val {
+            get {
+                return bool_val;
+            }
+            set {
+                bool_val = value;
             }
         }
         public Data_type Data_Type {
