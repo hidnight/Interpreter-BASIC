@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BASIC_Interpreter_Library {
     public enum Interpreter_symbol {
-        OUT_START = 997,
+        OUT_START = 9997,
         // комментарий
         TOK_COMMENT,
         // неизвестно
@@ -98,8 +98,39 @@ namespace BASIC_Interpreter_Library {
         SYM_UNARY_,
         SYM_PRIMITIVE,
         SYM_PRIMITIVE_,
-        SYM_LAST = SYM_PRIMITIVE_
-        // конец символов грамматики
-
+        SYM_LAST = SYM_PRIMITIVE_,
+        // операционные символы грамматики для ленты ПОЛИЗ
+        OUT_ID,
+        OUT_DIM,
+        OUT_ASS,
+        OUT_ID_Q,
+        OUT_PUSH,
+        OUT_BZ,
+        OUT_BR,
+        OUT_SWAP,
+        OUT_DEFL,
+        OUT_POPL,
+        OUT_PRINT,
+        OUT_STRING,
+        OUT_LONG,
+        OUT_REAL,
+        OUT_OR,
+        OUT_AND,
+        OUT_NOT,
+        OUT_EQ,
+        OUT_NE,
+        OUT_LT,
+        OUT_GT,
+        OUT_LE,
+        OUT_GE,
+        OUT_ADD,
+        OUT_SUB,
+        OUT_MUL,
+        OUT_DIV,
+        OUT_U_SUB,
+        OUT_U_ADD,
+        OUT_I4,
+        OUT_R8,
+        OUT_QUOTE
     }
 }
