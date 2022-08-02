@@ -57,7 +57,7 @@ namespace BASIC_Interpreter_Library {
             // работа LL автомата
             while (true) {
                 // состояние на стеке
-                s = clear_stack();
+                s = (Interpreter_symbol)clear_stack();
                 // получение управляющего значения
                 t = (Interpreter_symbol)SYNTA[(int)s][(int)tok.Stt];
                 // анализ управляющего значения
@@ -176,7 +176,8 @@ namespace BASIC_Interpreter_Library {
                 case OUT_I4:
                 case OUT_LONG: {
                     // проталкивание в стек
-                    exe.push(ref strip[strip_pointer]);
+                    Token e = strip[strip_pointer];
+                    exe.push(ref e);
                     // следующий элемент ленты
                     strip_pointer++;
                     break;
@@ -235,19 +236,19 @@ namespace BASIC_Interpreter_Library {
                         break;
                     }
                     case OUT_EQ: {
-                        X.Int_val = X.Int_val == Y.Int_val;
+                        X.Bool_val = X.Int_val == Y.Int_val;
                         break;
                     }
                     case OUT_NE: {
-                        X.Int_val = X.Int_val != Y.Int_val;
+                        X.Bool_val = X.Int_val != Y.Int_val;
                         break;
                     }
                     case OUT_LT: {
-                        X.Int_val = X.Int_val < Y.Int_val;
+                        X.Bool_val = X.Int_val < Y.Int_val;
                         break;
                     }
                     case OUT_GT: {
-                        X.int_val = X.int_val > Y.int_val;
+                        X.Bool_val = X.Int_val > Y.Int_val;
                         break;
                     }
                     }
@@ -285,7 +286,7 @@ namespace BASIC_Interpreter_Library {
                     break;
                 }
                 case OUT_BR: {
-                    exe.pop(Y);
+                    exe.pop(ref Y);
                     j = strip.find_DEF(Y.Int_val);
                     if (j == -1) {
                         throw new Exception("exe label not found");
