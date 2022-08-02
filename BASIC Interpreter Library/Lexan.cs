@@ -9,17 +9,22 @@ using static BASIC_Interpreter_Library.Constants;
 
 namespace BASIC_Interpreter_Library {
     public class Lexan {
+        // входной поток
         private FileStream input_stream;
+        // поток ошибок
         private FileStream error_stream;
         // текущий символ входа
-        sbyte cc;
-        // возвращает очередной символ входа
+        private sbyte cc;
+
+        // считывает очередной символ входа
         void next_char() {
             cc = (sbyte)input_stream.ReadByte();
         }
+        // возвращает токен комментария
         Interpreter_symbol get_comment() {
             while (true) {
                 next_char();
+                // '
                 if (cc == 10) {
                     return TOK_COMMENT;
                 }
@@ -35,7 +40,7 @@ namespace BASIC_Interpreter_Library {
                 case ALPHA:
                 case DIGIT: {
                     if (tok.str_val.Length < MAX_ID)
-                        tok.Append((char)((byte)cc));
+                        tok.Append((char)(byte)cc);
                     break;
                 }
                 default: {
@@ -100,7 +105,6 @@ namespace BASIC_Interpreter_Library {
                 tok.Stt = TOK_ELSE;
                 return 1;
             }
-
             if (tok.str_val.ToLower() == "then") {
                 tok.Stt = TOK_THEN;
                 return 1;
@@ -143,7 +147,7 @@ namespace BASIC_Interpreter_Library {
                 case DIGIT: {
                     must = 0;
                     number *= 10;
-                    number += cc - 30 /* '0' */;
+                    number += cc - 30; // '0'
                     div++;
                     break;
                 }
@@ -223,20 +227,35 @@ namespace BASIC_Interpreter_Library {
                     tok.Stt = TOK_RP;
                     return 1;
                 }
+                case '[': {
+                    next_char();
+                    tok.Stt = TOK_LB;
+                    return 1;
+                }
+                case ']': {
+                    next_char();
+                    tok.Stt = TOK_RB;
+                    return 1;
+                }
                 case ',': {
                     next_char();
                     tok.Stt = TOK_COMMA;
                     return 1;
                 }
                 case '<': {
+                    next_char();
+                    if ((char)((byte)cc) == '=') {
+                        tok.Stt = TOK_LE;
                         next_char();
-                        if ((char)((byte)cc) == '=') {
-                            tok.Stt = TOK_LE;
+                    } else {
+                        if ((char)((byte)cc) == '>') {
+                            tok.Stt = TOK_NE;
                             next_char();
                         } else {
                             tok.Stt = TOK_LT;
                         }
-                        return 1;
+                    }
+                    return 1;
                 }
                 case '>': {
                     next_char();
@@ -276,7 +295,8 @@ namespace BASIC_Interpreter_Library {
                     return 1;
                 } else if ((char)((byte)cc) == '\n') {
                     // строку подсчитываем
-                    // если в языке есть токен LF
+
+                    // в языке есть токен LF
                     tok.Stt = TOK_LF;
                     next_char();
                     return 1;
