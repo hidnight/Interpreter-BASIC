@@ -5,20 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BASIC_Interpreter_Library {
-    enum Interpreter_symbol {
+    public enum Interpreter_symbol {
         OUT_START = 997,
         // комментарий
         TOK_COMMENT,
         // неизвестно
         TOK_UNKNOWN,
         // токены
+        // конец текста
         TOK_EOT = 0,
-        TOK_LF,
         TOK_DIM,
         TOK_ID,
         TOK_AS,
         TOK_COMMA,
+        // \n
+        TOK_LF,
+        // =
         TOK_ASS,
+        // [
+        TOK_LB,
+        // ]
+        TOK_RB,
         TOK_IF,
         TOK_THEN,
         TOK_ELSE,
@@ -32,33 +39,51 @@ namespace BASIC_Interpreter_Library {
         TOK_OR,
         TOK_AND,
         TOK_NOT,
+        // ==
         TOK_EQ,
+        // <>
         TOK_NE,
+        // <
         TOK_LT,
+        // >
         TOK_GT,
+        // <=
         TOK_LE,
+        // >=
         TOK_GE,
+        // +
         TOK_ADD,
+        // -
         TOK_SUB,
+        // *
         TOK_MUL,
+        // /
         TOK_DIV,
+        // long
         TOK_I4,
+        // real
         TOK_R8,
+        // string
         TOK_QUOTE,
+        // (
         TOK_LP,
+        // )
         TOK_RP,
         TOK_LAST = TOK_RP,
         // нетерминалы
         SYM_MODULE,
         SYM_STATEMENT,
-        SYM_DECLARATION,
         SYM_ASSIGNMENT,
         SYM_BOOLEAN,
         SYM_PRINT,
         SYM_WHILE,
+        SYM_EMPTY,
+        SYM_DECLARATIONS,
+        SYM_DECLARATION,
         SYM_DECLARATION_LIST,
         SYM_TYPE,
         SYM_DECLARATION_LIST_,
+        SYM_ASSIGNMENT_,
         SYM_EXPRESSION,
         SYM_BOOLEAN_END,
         SYM_LOGICAL_AND,
@@ -72,7 +97,9 @@ namespace BASIC_Interpreter_Library {
         SYM_UNARY,
         SYM_UNARY_,
         SYM_PRIMITIVE,
-        SYM_LAST = SYM_PRIMITIVE
+        SYM_PRIMITIVE_,
+        SYM_LAST = SYM_PRIMITIVE_
         // конец символов грамматики
+
     }
 }
