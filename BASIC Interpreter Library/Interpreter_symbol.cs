@@ -131,6 +131,8 @@ namespace BASIC_Interpreter_Library {
         OUT_U_ADD,
         OUT_I4,
         OUT_R8,
-        OUT_QUOTE
+        OUT_QUOTE,
+        OUT_LABEL,
+        OUT_END
     }
 }
