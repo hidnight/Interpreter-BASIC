@@ -22,10 +22,6 @@ namespace BASIC_Interpreter_Library {
         TOK_LF,
         // =
         TOK_ASS,
-        // [
-        TOK_LB,
-        // ]
-        TOK_RB,
         TOK_IF,
         TOK_THEN,
         TOK_ELSE,
@@ -83,7 +79,6 @@ namespace BASIC_Interpreter_Library {
         SYM_DECLARATION_LIST,
         SYM_TYPE,
         SYM_DECLARATION_LIST_,
-        SYM_ASSIGNMENT_,
         SYM_EXPRESSION,
         SYM_BOOLEAN_END,
         SYM_LOGICAL_AND,
@@ -97,13 +92,11 @@ namespace BASIC_Interpreter_Library {
         SYM_UNARY,
         SYM_UNARY_,
         SYM_PRIMITIVE,
-        SYM_PRIMITIVE_,
-        SYM_LAST = SYM_PRIMITIVE_,
+        SYM_LAST = SYM_PRIMITIVE,
         // операционные символы грамматики для ленты ПОЛИЗ
         OUT_ID,
         OUT_DIM,
         OUT_ASS,
-        OUT_ID_Q,
         OUT_PUSH,
         OUT_BZ,
         OUT_BR,
