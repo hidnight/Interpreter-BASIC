@@ -12,26 +12,38 @@ namespace BASIC_Interpreter_Library {
         private int depth;
         public int Size => st.Count - 1;
         public Strip() {
-            st = new List<Token>();
-            st.Add(new Token());
+            st = new List<Token> {
+                new Token()
+            };
             st[0].Stt = OUT_START;
         }
         // очищает объект
-        public void reset() {
+        public void Reset() {
             depth = label = 0;
             st.Clear();
         }
         // возвращает новый идентификатор метки
-        public int new_label() {
+        public int New_label() {
             return ++label;
         }
         public Token this[int index] => st[index];
-        public void Add(Token t) {
-            st.Add(t);
-            if (depth < Size + 1) depth = Size + 1;
+        public void Add(Token e) {
+            Token temp = new Token() {
+                Stt = e.Stt,
+                Int_val = e.Int_val,
+                Dbl_val = e.Dbl_val,
+                Str_val = e.Str_val,
+                Bool_val = e.Bool_val,
+                Data_Type = e.Data_Type,
+                Line_Number = e.Line_Number
+            };
+            st.Add(temp);
+            if (depth < Size + 1) {
+                depth = Size + 1;
+            }
         }
         // ищет на ленте определение метки с идентификатором id
-        public int find_DEF(int id) {
+        public int Find_DEF(long id) {
             for (int i = 1; i < Size + 1; i++) {
                 if (st[i].Stt == OUT_END)
                     return -1; // конец ленты
@@ -53,7 +65,7 @@ namespace BASIC_Interpreter_Library {
                 switch (st[i].Stt) {
                 case OUT_QUOTE:
                 case OUT_ID:
-                    builder.Append(" " + st[i].str_val);
+                    builder.Append(" " + st[i].Str_val);
                     break;
                 case OUT_I4:
                 case OUT_LABEL:
