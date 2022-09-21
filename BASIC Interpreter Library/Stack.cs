@@ -1,68 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static BASIC_Interpreter_Library.Constants;
 
 namespace BASIC_Interpreter_Library {
     public class Stack<T> {
         // массив элементов
-        T[] st;
-        // счетчик
-        int count;
+        private List<T> st;
         // глубина
-        int depth;
-        // нулевое значение класса
-        T nill;
-        // максимальное количество элементов
-        int N;
+        private int depth;
         // конструктор
-        public Stack(int N = MAX_STACK) {
-            this.N = N;
-            reset();
+        public Stack() {
+            st = new List<T>();
+            Reset();
         }
         // очищает объект
-        void reset() {
-            depth = count = 0;
-            for (int i = 0; i < N; i++)
-                st[i] = nill;
+        private void Reset() {
+            depth = 0;
+            st.Clear();
         }
         // количество элементов
-        public int Size {
-            get {
-                return count;
-            }
-        }
+        public int Size => st.Count;
         // проталкивает элемент
         public void push(T value) {
-            if (count >= N)
-                throw new Exception("ststack::push stack overflow");
-            st[count++] = value;
-            if (depth < count)
-                depth = count;
+            st.Add(value);
+            if (depth < Size)
+                depth = Size;
         }
         // выталкивает элемент
         public T pop() {
-            if (count < 1)
+            if (Size < 1)
                 throw new Exception("ststack::pop stack is empty");
-            T value = st[--count];
-            st[count] = nill;
+            T value = st.Last();
+            st.Remove(st.Last());
             return value;
         }
         // выталкивает number элементов
         public T pop(int number) {
-            if (count < number)
+            if (Size < number)
                 throw new Exception("ststack::pop(int) stack isn't so big as number");
-            count -= number;
-            return st[count];
+            T result = st.Last();
+            for (int i = number; i > 0; i--) {
+                result = st.Last();
+                st.Remove(st.Last());
+            }
+            return result;
         }
         // элемент на вершине
         public T Top {
             get {
-                if (count < 1)
+                if (Size < 1)
                     throw new Exception("ststack::top stack is empty");
-                return st[count - 1];
+                return st.Last();
             }
         }
     }
