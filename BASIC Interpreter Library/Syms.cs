@@ -13,22 +13,23 @@ namespace BASIC_Interpreter_Library {
         private int depth;
         public Syms() {
             depth = 0;
+            st = new List<Token>();
             st.Add(new Token());
             st[0].Stt = TOK_EOT;
-            st[0].str_val = "$";
+            st[0].Str_val = "$";
         }
         public int Size => st.Count - 1;
         // возвращает номер символа в таблице
-        public int find(Token tok) {
-            for (int i = 1; i < Size + 1; i++) {
-                if (tok.str_val == st[i].str_val) {
+        public long find(Token tok) {
+            for (long i = 1; i < Size + 1; i++) {
+                if (tok.Str_val == st[(int)i].Str_val) {
                     return i;
                 }
             }
             return ST_NOTFOUND;
         }
         // вставляет символ в таблицу
-        public int insert(Token tok) {
+        public long insert(Token tok) {
             if (find(tok) == ST_NOTFOUND) {
                 st.Add(tok);
                 if (depth < Size + 1)
