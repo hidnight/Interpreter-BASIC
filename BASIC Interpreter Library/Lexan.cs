@@ -10,22 +10,23 @@ using static BASIC_Interpreter_Library.Constants;
 namespace BASIC_Interpreter_Library {
     public class Lexan {
         // входной поток
-        private FileStream input_stream;
+        private StreamReader input_stream;
         // поток ошибок
-        private FileStream error_stream;
+        private StreamWriter error_stream;
         // текущий символ входа
         private sbyte cc;
-
+        private ulong lineNumber = 1;
         // считывает очередной символ входа
-        void next_char() {
-            cc = (sbyte)input_stream.ReadByte();
+        void Next_char() {
+            cc = (sbyte)input_stream.Read();
         }
         // возвращает токен комментария
+        // вход по '
         Interpreter_symbol get_comment() {
             while (true) {
-                next_char();
-                // '
-                if (cc == 10) {
+                Next_char();
+                // \n
+                if (cc == '\n' || cc == EOF) {
                     return TOK_COMMENT;
                 }
             }
@@ -39,7 +40,7 @@ namespace BASIC_Interpreter_Library {
                 switch (TOT[(byte)cc]) {
                 case ALPHA:
                 case DIGIT: {
-                    if (tok.str_val.Length < MAX_ID)
+                    if (tok.Str_val.Length < MAX_ID)
                         tok.Append((char)(byte)cc);
                     break;
                 }
@@ -47,78 +48,78 @@ namespace BASIC_Interpreter_Library {
                     return is_keyword(ref tok);
                 }
                 }
-                next_char();
+                Next_char();
             }
         }
         // определяет ключевое слово
         int is_keyword(ref Token tok) {
-
-            if (tok.str_val.ToLower() == "dim") {
+            if (tok.Str_val.ToLower() == "dim") {
                 tok.Stt = TOK_DIM;
                 return 1;
             }
-            if (tok.str_val.ToLower() == "as") {
+            if (tok.Str_val.ToLower() == "as") {
                 tok.Stt = TOK_AS;
                 return 1;
             }
-            if (tok.str_val.ToLower() == "end_if") {
+            if (tok.Str_val.ToLower() == "end_if") {
                 tok.Stt = TOK_END_IF;
                 return 1;
             }
-            if (tok.str_val.ToLower() == "or") {
+            if (tok.Str_val.ToLower() == "or") {
                 tok.Stt = TOK_OR;
                 return 1;
             }
-            if (tok.str_val.ToLower() == "and") {
+            if (tok.Str_val.ToLower() == "and") {
                 tok.Stt = TOK_AND;
                 return 1;
             }
-            if (tok.str_val.ToLower() == "not") {
+            if (tok.Str_val.ToLower() == "not") {
                 tok.Stt = TOK_NOT;
                 return 1;
             }
-            if (tok.str_val.ToLower() == "while") {
+            if (tok.Str_val.ToLower() == "while") {
                 tok.Stt = TOK_WHILE;
                 return 1;
             }
-            if (tok.str_val.ToLower() == "end_while") {
+            if (tok.Str_val.ToLower() == "end_while") {
                 tok.Stt = TOK_END_WHILE;
                 return 1;
             }
-            if (tok.str_val.ToLower() == "if") {
+            if (tok.Str_val.ToLower() == "if") {
                 tok.Stt = TOK_IF;
                 return 1;
             }
-            if (tok.str_val.ToLower() == "print") {
+            if (tok.Str_val.ToLower() == "print") {
                 tok.Stt = TOK_PRINT;
                 return 1;
             }
-            if (tok.str_val.ToLower() == "real") {
+            if (tok.Str_val.ToLower() == "real") {
                 tok.Stt = TOK_REAL;
                 return 1;
             }
-            if (tok.str_val.ToLower() == "string") {
+            if (tok.Str_val.ToLower() == "string") {
                 tok.Stt = TOK_STRING;
                 return 1;
             }
-            if (tok.str_val.ToLower() == "else") {
+            if (tok.Str_val.ToLower() == "else") {
                 tok.Stt = TOK_ELSE;
                 return 1;
             }
-            if (tok.str_val.ToLower() == "then") {
+            if (tok.Str_val.ToLower() == "then") {
                 tok.Stt = TOK_THEN;
                 return 1;
             }
             return 1;
         }
         // принимает целое число
-        int is_number(ref Token tok) {
+        long is_number(ref Token tok) {
             tok.Stt = TOK_I4;
+            tok.Data_Type = Data_type.STDT_I4;
             while (true) {
                 switch (TOT[(byte)cc]) {
                 case DIGIT: {
                     tok.Int_val *= 10;
-                    tok.Int_val += cc - 30 /* '0' */;
+                    tok.Int_val += cc -  '0';
                     break;
                 }
                 case CHDOT: {
@@ -132,34 +133,35 @@ namespace BASIC_Interpreter_Library {
                     return 1;
                 }
                 }
-                next_char();
+                Next_char();
             }
         }
         // разбирает вещественную часть числа
         int is_real(ref Token tok, int must) {
             tok.Stt = TOK_R8;
+            tok.Data_Type = Data_type.STDT_R8;
             double number = 0.0;
             int div = 0;
             while (true) {
                 // точка уже прочитана
-                next_char();
+                Next_char();
                 switch (TOT[(byte)cc]) {
                 case DIGIT: {
                     must = 0;
                     number *= 10;
-                    number += cc - 30; // '0'
+                    number += cc - '0';
                     div++;
                     break;
                 }
                 case CHDOT: {
-                    error_stream.Write(Encoding.ASCII.GetBytes("\nlexan: extra dot in float\n\n"), 0, 256);
+                    error_stream.Write("\nlexan: extra dot in float\n\n");
                     return 0;
                 }
                 default: {
                     if (must == 1) {
-                        error_stream.Write(Encoding.ASCII.GetBytes("\nlexan: single dot in float\n\n"), 0, 256);
+                        error_stream.Write("\nlexan: single dot in float\n\n");
                     }
-                    tok.Dbl_val = tok.Int_val + number / Math.Pow(10, div);
+                    tok.Dbl_val = number / Math.Pow(10, div) + tok.Int_val;
                     return 1;
                 }
                 }
@@ -168,27 +170,28 @@ namespace BASIC_Interpreter_Library {
         // разбирает строковый литерал
         int is_quote(ref Token tok) {
             tok.Stt = TOK_QUOTE;
+            tok.Data_Type = Data_type.STDT_QUOTE;
             while (true) {
-                next_char();
+                Next_char();
                 if ((TOT[(byte)cc]) == QUOTE) {
-                    next_char();
+                    Next_char();
                     if ((TOT[(byte)cc]) == QUOTE) {
                         return 1;
                     } else {
-                        if (tok.str_val.Length < MAX_QUOTE)
+                        if (tok.Str_val.Length < MAX_QUOTE)
                             tok.Append((char)((byte)cc));
                     }
 
                 } else {
                     if (cc == EOF) {
-                        error_stream.Write(Encoding.ASCII.GetBytes("\nlexan: unexpected end of file in quote\n\n"), 0, 256);
+                        error_stream.Write("\nlexan: unexpected end of file in quote\n\n");
                         return 0;
                     }
-                    if ((TOT[(byte)cc]) < 32) {
-                        error_stream.Write(Encoding.ASCII.GetBytes("\nlexan: extra character in quote\n\n"), 0, 256);
+                    if (TOT[(byte)cc] < 32) {
+                        error_stream.Write("\nlexan: extra character in quote\n\n");
                         return 0;
                     }
-                    if (tok.str_val.Length < MAX_QUOTE)
+                    if (tok.Str_val.Length < MAX_QUOTE)
                         tok.Append((char)((byte)cc));
                 }
             }
@@ -198,59 +201,49 @@ namespace BASIC_Interpreter_Library {
             while (true) {
                 switch ((char)((byte)cc)) {
                 case '+': {
-                    next_char();
+                    Next_char();
                     tok.Stt = TOK_ADD;
                     return 1;
                 }
                 case '-': {
-                    next_char();
+                    Next_char();
                     tok.Stt = TOK_SUB;
                     return 1;
                 }
                 case '*': {
-                    next_char();
+                    Next_char();
                     tok.Stt = TOK_MUL;
                     return 1;
                 }
                 case '/': {
-                    next_char();
+                    Next_char();
                     tok.Stt = TOK_DIV;
                     return 1;
                 }
                 case '(': {
-                    next_char();
+                    Next_char();
                     tok.Stt = TOK_LP;
                     return 1;
                 }
                 case ')': {
-                    next_char();
+                    Next_char();
                     tok.Stt = TOK_RP;
                     return 1;
                 }
-                case '[': {
-                    next_char();
-                    tok.Stt = TOK_LB;
-                    return 1;
-                }
-                case ']': {
-                    next_char();
-                    tok.Stt = TOK_RB;
-                    return 1;
-                }
                 case ',': {
-                    next_char();
+                    Next_char();
                     tok.Stt = TOK_COMMA;
                     return 1;
                 }
                 case '<': {
-                    next_char();
+                    Next_char();
                     if ((char)((byte)cc) == '=') {
                         tok.Stt = TOK_LE;
-                        next_char();
+                        Next_char();
                     } else {
                         if ((char)((byte)cc) == '>') {
                             tok.Stt = TOK_NE;
-                            next_char();
+                            Next_char();
                         } else {
                             tok.Stt = TOK_LT;
                         }
@@ -258,20 +251,20 @@ namespace BASIC_Interpreter_Library {
                     return 1;
                 }
                 case '>': {
-                    next_char();
+                    Next_char();
                     if ((char)((byte)cc) == '=') {
                         tok.Stt = TOK_GE;
-                        next_char();
+                        Next_char();
                     } else {
                         tok.Stt = TOK_GT;
                     }
                     return 1;
                 }
                 case '=': {
-                    next_char();
+                    Next_char();
                     if ((char)((byte)cc) == '=') {
                         tok.Stt = TOK_EQ;
-                        next_char();
+                        Next_char();
                     } else {
                         tok.Stt = TOK_ASS;
                     }
@@ -279,14 +272,14 @@ namespace BASIC_Interpreter_Library {
                 }
                 default: {
                     tok.Stt = TOK_UNKNOWN;
-                    error_stream.Write(Encoding.ASCII.GetBytes("\nlexan: extra character in line\n\n"), 0, 256);
+                    error_stream.Write("\nlexan: extra character in line\n\n");
                     return 0;
                 }
                 }
             }
         }
         // возвращает очередной токен потока
-        public int Next_token(ref Token tok) {
+        public long Next_token(ref Token tok) {
             // ищем первый символ лексемы
             while (true) {
                 if (cc == EOF) {
@@ -295,10 +288,10 @@ namespace BASIC_Interpreter_Library {
                     return 1;
                 } else if ((char)((byte)cc) == '\n') {
                     // строку подсчитываем
-
+                    lineNumber++;
                     // в языке есть токен LF
                     tok.Stt = TOK_LF;
-                    next_char();
+                    Next_char();
                     return 1;
 
                 } else if ((char)((byte)cc) == '\'') {
@@ -311,10 +304,11 @@ namespace BASIC_Interpreter_Library {
                     break;
                 }
                 // следующий символ
-                next_char();
+                Next_char();
             }
             // подготавливаем токен
-            tok.reset();
+            tok.Reset();
+            tok.Line_Number = lineNumber;
             // разбираем первый символ лексемы
             switch (TOT[(byte)cc]) {
             case ALPHA:
@@ -330,11 +324,14 @@ namespace BASIC_Interpreter_Library {
             }
         }
         // конструктор
-        public Lexan(ref FileStream input_stream, ref FileStream error_stream) {
+        public Lexan(StreamReader input_stream, ref StreamWriter error_stream) {
+            if (input_stream.CurrentEncoding != Encoding.ASCII) {
+                throw new Exception("Входные данные не в ASCII формате");
+            }
             this.input_stream = input_stream;
             this.error_stream = error_stream;
             // первый символ потока
-            next_char();
+            Next_char();
         }
     }
 }
