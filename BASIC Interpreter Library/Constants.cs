@@ -83,7 +83,7 @@ namespace BASIC_Interpreter_Library {
             new Interpreter_symbol[]/*10 SYM_DECLARATION_LIST  */{ TOK_ID, OUT_ID, TOK_AS, SYM_TYPE, OUT_DIM, SYM_DECLARATION_LIST_, TOK_EOT },
             new Interpreter_symbol[]/*11 SYM_DECLARATION_LIST_ */{ TOK_COMMA, TOK_ID, OUT_ID, TOK_AS, SYM_TYPE, OUT_DIM, SYM_DECLARATION_LIST_, TOK_EOT },
             new Interpreter_symbol[]/*12 SYM_DECLARATION_LIST_ */{ TOK_LF, TOK_EOT },
-            new Interpreter_symbol[]/*13 SYM_ASSIGNMENT        */{ TOK_ID, OUT_ID, TOK_EQ, SYM_EXPRESSION, OUT_ASS, TOK_LF, TOK_EOT },
+            new Interpreter_symbol[]/*13 SYM_ASSIGNMENT        */{ TOK_ID, OUT_ID, TOK_ASS, SYM_EXPRESSION, OUT_ASS, TOK_LF, TOK_EOT },
             new Interpreter_symbol[]/*14 SYM_BOOLEAN           */{ TOK_IF, SYM_EXPRESSION, TOK_THEN, OUT_PUSH, OUT_BZ, SYM_MODULE, SYM_BOOLEAN_END, TOK_EOT },
             new Interpreter_symbol[]/*15 SYM_BOOLEAN_END       */{ TOK_ELSE, OUT_PUSH, OUT_BR, OUT_SWAP, OUT_DEFL, TOK_LF, SYM_MODULE, OUT_POPL, OUT_DEFL, TOK_END_IF, TOK_LF, TOK_EOT },
             new Interpreter_symbol[]/*16 SYM_BOOLEAN_END       */{ OUT_POPL, OUT_DEFL, TOK_END_IF, TOK_LF, TOK_EOT },
