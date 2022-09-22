@@ -1,6 +1,7 @@
 ﻿using static BASIC_Interpreter_Library.Constants;
 using static BASIC_Interpreter_Library.Interpreter_symbol;
 using static BASIC_Interpreter_Library.Data_type;
+using System;
 
 namespace BASIC_Interpreter_Library {
     public class Token {
@@ -11,9 +12,11 @@ namespace BASIC_Interpreter_Library {
             Stt = TOK_EOT;
             Int_val = 0;
             Dbl_val = 0;
+            Bool_val = false;
             Data_Type = STDT_NULL;
             Line_Number = 0;
             Str_val = "";
+            Name = "";
         }
 
         // добавляет символ
@@ -50,6 +53,10 @@ namespace BASIC_Interpreter_Library {
             set;
         }
         public ulong Line_Number {
+            get;
+            set;
+        }
+        public string Name {
             get;
             set;
         }
