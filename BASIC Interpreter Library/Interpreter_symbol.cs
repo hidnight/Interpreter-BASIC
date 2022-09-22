@@ -14,24 +14,24 @@ namespace BASIC_Interpreter_Library {
         // токены
         // конец текста
         TOK_EOT = 0,
-        TOK_DIM,
+        TOK_DIM,        // ключевое слово
         TOK_ID,
-        TOK_AS,
+        TOK_AS,         // ключевое слово
         TOK_COMMA,
         // \n
         TOK_LF,
         // =
         TOK_ASS,
-        TOK_IF,
-        TOK_THEN,
-        TOK_ELSE,
-        TOK_END_IF,
-        TOK_PRINT,
-        TOK_WHILE,
-        TOK_END_WHILE,
-        TOK_STRING,
-        TOK_LONG,
-        TOK_REAL,
+        TOK_IF,         // ключевое слово
+        TOK_THEN,       // ключевое слово
+        TOK_ELSE,       // ключевое слово
+        TOK_END_IF,     // ключевое слово
+        TOK_PRINT,      // ключевое слово
+        TOK_WHILE,      // ключевое слово
+        TOK_END_WHILE,  // ключевое слово
+        TOK_STRING,     // ключевое слово
+        TOK_LONG,       // ключевое слово
+        TOK_REAL,       // ключевое слово
         TOK_OR,
         TOK_AND,
         TOK_NOT,
@@ -56,11 +56,11 @@ namespace BASIC_Interpreter_Library {
         // /
         TOK_DIV,
         // long
-        TOK_I4,
+        TOK_I4,     // константа
         // real
-        TOK_R8,
+        TOK_R8,     // константа
         // string
-        TOK_QUOTE,
+        TOK_QUOTE,  // константа
         // (
         TOK_LP,
         // )
@@ -74,7 +74,6 @@ namespace BASIC_Interpreter_Library {
         SYM_PRINT,
         SYM_WHILE,
         SYM_EMPTY,
-        SYM_DECLARATIONS,
         SYM_DECLARATION,
         SYM_DECLARATION_LIST,
         SYM_TYPE,
