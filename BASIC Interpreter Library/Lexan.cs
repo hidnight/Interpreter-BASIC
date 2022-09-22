@@ -45,7 +45,12 @@ namespace BASIC_Interpreter_Library {
                     break;
                 }
                 default: {
-                    return is_keyword(ref tok);
+                    int result = is_keyword(ref tok);
+                    if (tok.Stt == TOK_ID) {
+                        tok.Name = tok.Str_val;
+                        tok.Str_val = "";
+                    }
+                    return result;
                 }
                 }
                 Next_char();
@@ -109,6 +114,10 @@ namespace BASIC_Interpreter_Library {
                 tok.Stt = TOK_THEN;
                 return 1;
             }
+            if (tok.Str_val.ToLower() == "long") {
+                tok.Stt = TOK_LONG;
+                return 1;
+            }
             return 1;
         }
         // принимает целое число
@@ -119,14 +128,14 @@ namespace BASIC_Interpreter_Library {
                 switch (TOT[(byte)cc]) {
                 case DIGIT: {
                     tok.Int_val *= 10;
-                    tok.Int_val += cc -  '0';
+                    tok.Int_val += cc - '0';
                     break;
                 }
                 case CHDOT: {
                     return is_real(ref tok, 0);
                 }
                 default: {
-                    if (tok.Dbl_val == 0.0 && tok.Stt != TOK_UNKNOWN && tok.Stt == TOK_I4) {
+                    if (tok.Dbl_val != 0.0 && tok.Stt != TOK_UNKNOWN && tok.Stt == TOK_I4) {
                         tok.Stt = TOK_R8;
                         tok.Dbl_val = tok.Int_val;
                     }
@@ -173,13 +182,15 @@ namespace BASIC_Interpreter_Library {
             tok.Data_Type = Data_type.STDT_QUOTE;
             while (true) {
                 Next_char();
+                // вход по "
                 if ((TOT[(byte)cc]) == QUOTE) {
                     Next_char();
-                    if ((TOT[(byte)cc]) == QUOTE) {
+                    if ((TOT[(byte)cc]) != QUOTE) {
                         return 1;
                     } else {
-                        if (tok.Str_val.Length < MAX_QUOTE)
+                        if (tok.Str_val.Length < MAX_QUOTE) {
                             tok.Append((char)((byte)cc));
+                        }
                     }
 
                 } else {
@@ -187,7 +198,11 @@ namespace BASIC_Interpreter_Library {
                         error_stream.Write("\nlexan: unexpected end of file in quote\n\n");
                         return 0;
                     }
-                    if (TOT[(byte)cc] < 32) {
+                    // LF
+                    /*if (cc == '\n') {
+
+                    }*/
+                    if (cc < 32) {
                         error_stream.Write("\nlexan: extra character in quote\n\n");
                         return 0;
                     }
