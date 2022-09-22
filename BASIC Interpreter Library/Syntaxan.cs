@@ -39,10 +39,10 @@ namespace BASIC_Interpreter_Library {
             strip = new Strip();
             tok = new Token();
         }
-        public void FlushStreams() {
+        /*public void FlushStreams() {
             parse_stream.Flush();
             error_stream.Flush();
-        }
+        }*/
         // LL(1) трансляция в ПОЛИЗ
         public int parse() {
             if (next_token() == 0)
@@ -70,6 +70,9 @@ namespace BASIC_Interpreter_Library {
                 // получение управляющего значения
                 try {
                     t = SYNTA[(int)s][(int)tok.Stt];
+                    error_stream.Write("\n s = " + s.ToString() + "\n");
+                    error_stream.Write("\n tok.Stt = " + tok.Stt.ToString() + "\n");
+                    error_stream.Write("\n t = " + t.ToString() + "\n");
                 } catch (Exception) {
                     throw;
                 }
@@ -77,7 +80,7 @@ namespace BASIC_Interpreter_Library {
                 if (t <= 0) {
                     // ошибка
                     error_stream.Write("\nsyntaxan: failure synta =" + t + ".\n\n");
-                    FlushStreams();
+                    //FlushStreams();
                     return 0;
                 } else {
                     if (t == ACC) {
@@ -91,7 +94,7 @@ namespace BASIC_Interpreter_Library {
                             clear_stack();
                             // следующий токен
                             if (next_token() == 0) {
-                                FlushStreams();
+                                //FlushStreams();
                                 return 0;
                             }
                         } else {
@@ -111,7 +114,7 @@ namespace BASIC_Interpreter_Library {
                             } else {
                                 // ошибка управляющей таблицы
                                 error_stream.Write("syntaxan: invalid SYNTA table");
-                                FlushStreams();
+                                //FlushStreams();
                                 return 0;
                             }
                         }
@@ -122,10 +125,10 @@ namespace BASIC_Interpreter_Library {
             // записываем конец ленты ПОЛИЗ
             out_(OUT_END);
             // выводим содержимое ленты ПОЛИЗ
-            error_stream.Write(strip.ToString());
+            error_stream.Write("\nЛента ПОЛИЗ\n" + strip.ToString() + "\n");
             execute();
             error_stream.Write("\nsyntaxan: success.\n\n");
-            FlushStreams();
+            //FlushStreams();
             return 1;
         }
         // запись символа на ленту ПОЛИЗ
@@ -138,7 +141,8 @@ namespace BASIC_Interpreter_Library {
                 Str_val = tok.Str_val,
                 Bool_val = tok.Bool_val,
                 Data_Type = tok.Data_Type,
-                Line_Number = tok.Line_Number
+                Line_Number = tok.Line_Number,
+                Name = tok.Name
             };
             switch (tt) {
             case OUT_PUSH: {
@@ -195,7 +199,7 @@ namespace BASIC_Interpreter_Library {
                 stt = strip[(int)strip_pointer].Stt;
                 switch (stt) {
                 case OUT_END: {
-                    error_stream.Write("\nEXE DONE.\n\n");
+                    error_stream.Write("\nВыполнение завершено.\n\n");
                     return;
                 }
                 case OUT_ID:
@@ -221,6 +225,9 @@ namespace BASIC_Interpreter_Library {
                     case OUT_QUOTE:
                     case OUT_STRING: {
                         e.Data_Type = Data_type.STDT_QUOTE;
+                        break;
+                    }
+                    case OUT_ID: {
                         break;
                     }
                     default: {
@@ -252,7 +259,7 @@ namespace BASIC_Interpreter_Library {
                     exe_pop(ref Y);
                     // ID
                     exe.pop(ref X);
-                    j = syms.find(X);
+                    j = syms.find(ref X);
                     if (j == ST_NOTFOUND) {
                         error_stream.Write("exe_pop identifier not found" + ". Строка " + tok.Line_Number + "\n");
                         return;
@@ -273,7 +280,7 @@ namespace BASIC_Interpreter_Library {
                             break;
                         }
                         case Data_type.STDT_QUOTE: {
-                            error_stream.Write("exe QOUTE can not be assinged to LONG" + ". Строка " + tok.Line_Number + "\n");
+                            error_stream.Write("exe переменной типа LONG нельзя присвоить значение типа QUOTE. Строка " + tok.Line_Number + "\n");
                             return;
                         }
                         }
@@ -1248,6 +1255,7 @@ namespace BASIC_Interpreter_Library {
 
                 if (++it_counter > MAX_IT) {
                     error_stream.Write("exe deadlock" + ". Строка " + tok.Line_Number + "\n");
+                    //FlushStreams();
                     return;
                 }
             }
@@ -1258,9 +1266,10 @@ namespace BASIC_Interpreter_Library {
             if (e.Stt == OUT_I4 || e.Stt == OUT_R8 || e.Stt == OUT_QUOTE) {
             } else {
                 if (e.Stt == OUT_ID) {
-                    long j = syms.find(e);
+                    long j = syms.find(ref e);
                     if (j == ST_NOTFOUND) {
-                        error_stream.Write("exe_pop identifier not found" + ". Строка " + tok.Line_Number + "\n");
+                        error_stream.Write("exe_pop Идентификатор \"" + e.Name + "\" не найден" + ". Строка " + tok.Line_Number + "\n");
+                        //FlushStreams();
                         return;
                     }
                     e.Data_Type = syms[(int)j].Data_Type;
@@ -1283,6 +1292,7 @@ namespace BASIC_Interpreter_Library {
                     }
                 } else {
                     error_stream.Write("exe_pop internal error" + ". Строка " + tok.Line_Number + "\n");
+                    //FlushStreams();
                     return;
                 }
             }
