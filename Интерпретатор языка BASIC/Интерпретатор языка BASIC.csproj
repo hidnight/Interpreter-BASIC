@@ -33,6 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.AvalonEdit, Version=6.1.3.50, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
@@ -101,6 +102,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BASIC Interpreter Library\BASIC Interpreter Library.csproj">
+      <Project>{6b6e7a64-878d-44b4-9e5f-a2749cf3a047}</Project>
+      <Name>BASIC Interpreter Library</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
