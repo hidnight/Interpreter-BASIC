@@ -25,7 +25,8 @@ namespace BASIC_Interpreter_Library {
                 Str_val = e.Str_val,
                 Bool_val = e.Bool_val,
                 Data_Type = e.Data_Type,
-                Line_Number = e.Line_Number
+                Line_Number = e.Line_Number,
+                Name = e.Name
             };
             st.Add(temp);
             if (depth < Size) {
@@ -35,8 +36,14 @@ namespace BASIC_Interpreter_Library {
         // выталкивает элемент
         public void pop(ref Token e) {
             if (Size < 1)
-                throw new Exception("exstack::push exe-stack is empty");
-            e = st.Last();
+                throw new Exception("exstack::pop exe-stack is empty");
+            e.Stt = st.Last().Stt;
+            e.Int_val = st.Last().Int_val;
+            e.Dbl_val = st.Last().Dbl_val;
+            e.Bool_val = st.Last().Bool_val;
+            e.Data_Type = st.Last().Data_Type;
+            e.Str_val = st.Last().Str_val;
+            e.Name = st.Last().Name;
             st.RemoveAt(Size - 1);
         }
     }

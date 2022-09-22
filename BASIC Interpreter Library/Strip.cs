@@ -35,7 +35,8 @@ namespace BASIC_Interpreter_Library {
                 Str_val = e.Str_val,
                 Bool_val = e.Bool_val,
                 Data_Type = e.Data_Type,
-                Line_Number = e.Line_Number
+                Line_Number = e.Line_Number,
+                Name = e.Name
             };
             st.Add(temp);
             if (depth < Size + 1) {
@@ -64,8 +65,10 @@ namespace BASIC_Interpreter_Library {
                 builder.Append(" " + st[i].Stt.ToString());
                 switch (st[i].Stt) {
                 case OUT_QUOTE:
-                case OUT_ID:
                     builder.Append(" " + st[i].Str_val);
+                    break;
+                case OUT_ID:
+                    builder.Append(" " + st[i].Name);
                     break;
                 case OUT_I4:
                 case OUT_LABEL:
