@@ -4,7 +4,7 @@ using static BASIC_Interpreter_Library.Data_type;
 using System;
 
 namespace BASIC_Interpreter_Library {
-    public class Token {
+    public class Token : ICloneable {
         public Token() {
             Reset();
         }
@@ -28,6 +28,11 @@ namespace BASIC_Interpreter_Library {
             }
             return false;
         }
+
+        public object Clone() {
+            return MemberwiseClone();
+        }
+
         public Interpreter_symbol Stt {
             get;
             set;

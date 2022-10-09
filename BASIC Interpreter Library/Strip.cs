@@ -28,17 +28,7 @@ namespace BASIC_Interpreter_Library {
         }
         public Token this[int index] => st[index];
         public void Add(Token e) {
-            Token temp = new Token() {
-                Stt = e.Stt,
-                Int_val = e.Int_val,
-                Dbl_val = e.Dbl_val,
-                Str_val = e.Str_val,
-                Bool_val = e.Bool_val,
-                Data_Type = e.Data_Type,
-                Line_Number = e.Line_Number,
-                Name = e.Name
-            };
-            st.Add(temp);
+            st.Add((Token)e.Clone());
             if (depth < Size + 1) {
                 depth = Size + 1;
             }
