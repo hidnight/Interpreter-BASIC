@@ -94,7 +94,6 @@ namespace BASIC_Interpreter_Library {
                             clear_stack();
                             // следующий токен
                             if (next_token() == 0) {
-                                //FlushStreams();
                                 return 0;
                             }
                         } else {
@@ -134,16 +133,8 @@ namespace BASIC_Interpreter_Library {
         // запись символа на ленту ПОЛИЗ
         void out_(Interpreter_symbol tt) {
             int i = 0, j = 0;
-            Token t = new Token() {
-                Stt = tt,
-                Int_val = tok.Int_val,
-                Dbl_val = tok.Dbl_val,
-                Str_val = tok.Str_val,
-                Bool_val = tok.Bool_val,
-                Data_Type = tok.Data_Type,
-                Line_Number = tok.Line_Number,
-                Name = tok.Name
-            };
+            Token t = (Token)tok.Clone();
+            t.Stt = tt;
             switch (tt) {
             case OUT_PUSH: {
                 j = strip.New_label();
@@ -1199,7 +1190,7 @@ namespace BASIC_Interpreter_Library {
                 case OUT_BZ: {
                     exe_pop(ref Y);
                     exe_pop(ref X);
-                    if (X.Bool_val) {
+                    if (X.Bool_val == false) {
                         j = strip.Find_DEF(Y.Int_val);
                         if (j == -1) {
                             error_stream.Write("exe label not found" + ". Строка " + tok.Line_Number + "\n");
@@ -1207,9 +1198,8 @@ namespace BASIC_Interpreter_Library {
                         }
                         strip_pointer = j;
                     } else {
-                        Y.Int_val = 0;
+                        strip_pointer++;
                     }
-                    strip_pointer++;
                     break;
                 }
 
@@ -1228,19 +1218,19 @@ namespace BASIC_Interpreter_Library {
                     exe_pop(ref Y);
                     switch (Y.Data_Type) {
                     case Data_type.STDT_I4: {
-                        parse_stream.Write(Y.Int_val.ToString());
+                        parse_stream.WriteLine(Y.Int_val.ToString());
                         break;
                     }
                     case Data_type.STDT_R8: {
-                        parse_stream.Write(Y.Dbl_val.ToString("R", CultureInfo.InvariantCulture));
+                        parse_stream.WriteLine(Y.Dbl_val.ToString("R", CultureInfo.InvariantCulture));
                         break;
                     }
                     case Data_type.STDT_QUOTE: {
-                        parse_stream.Write(Y.Str_val);
+                        parse_stream.WriteLine(Y.Str_val);
                         break;
                     }
                     case Data_type.STDT_BOOL: {
-                        parse_stream.Write(Y.Bool_val);
+                        parse_stream.WriteLine(Y.Bool_val);
                         break;
                     }
                     default: {
@@ -1254,7 +1244,7 @@ namespace BASIC_Interpreter_Library {
                 }
 
                 if (++it_counter > MAX_IT) {
-                    error_stream.Write("exe deadlock" + ". Строка " + tok.Line_Number + "\n");
+                    error_stream.Write("Возможный бесконечный цикл. Строка " + tok.Line_Number + "\n");
                     //FlushStreams();
                     return;
                 }
