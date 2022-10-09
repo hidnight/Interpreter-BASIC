@@ -39,7 +39,8 @@ namespace BASIC_Interpreter_Library {
                 // нет разницы между буквой и цифрой
                 switch (TOT[(byte)cc]) {
                 case ALPHA:
-                case DIGIT: {
+                case DIGIT:
+                case UNDER: {
                     if (tok.Str_val.Length < MAX_ID)
                         tok.Append((char)(byte)cc);
                     break;
@@ -192,7 +193,6 @@ namespace BASIC_Interpreter_Library {
                             tok.Append((char)((byte)cc));
                         }
                     }
-
                 } else {
                     if (cc == EOF) {
                         error_stream.Write("\nlexan: unexpected end of file in quote\n\n");
@@ -327,6 +327,7 @@ namespace BASIC_Interpreter_Library {
             // разбираем первый символ лексемы
             switch (TOT[(byte)cc]) {
             case ALPHA:
+            case UNDER:
                 return get_id(ref tok);
             case DIGIT:
                 return is_number(ref tok);
