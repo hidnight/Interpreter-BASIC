@@ -31,7 +31,7 @@ namespace BASIC_Interpreter_Library {
             if (Size < 1)
                 throw new Exception("ststack::pop stack is empty");
             T value = st.Last();
-            st.Remove(st.Last());
+            st.RemoveAt(Size - 1);
             return value;
         }
         // выталкивает number элементов
