@@ -84,11 +84,11 @@ namespace BASIC_Interpreter_Library {
             new Interpreter_symbol[]/*11 SYM_DECLARATION_LIST_ */{ TOK_COMMA, TOK_ID, OUT_ID, TOK_AS, SYM_TYPE, OUT_DIM, SYM_DECLARATION_LIST_, TOK_EOT },
             new Interpreter_symbol[]/*12 SYM_DECLARATION_LIST_ */{ TOK_LF, TOK_EOT },
             new Interpreter_symbol[]/*13 SYM_ASSIGNMENT        */{ TOK_ID, OUT_ID, TOK_ASS, SYM_EXPRESSION, OUT_ASS, TOK_LF, TOK_EOT },
-            new Interpreter_symbol[]/*14 SYM_BOOLEAN           */{ TOK_IF, SYM_EXPRESSION, TOK_THEN, OUT_PUSH, OUT_BZ, SYM_MODULE, SYM_BOOLEAN_END, TOK_EOT },
-            new Interpreter_symbol[]/*15 SYM_BOOLEAN_END       */{ TOK_ELSE, OUT_PUSH, OUT_BR, OUT_SWAP, OUT_DEFL, TOK_LF, SYM_MODULE, OUT_POPL, OUT_DEFL, TOK_END_IF, TOK_LF, TOK_EOT },
+            new Interpreter_symbol[]/*14 SYM_BOOLEAN           */{ TOK_IF, SYM_EXPRESSION, TOK_THEN, TOK_LF, OUT_PUSH, OUT_BZ, SYM_MODULE, SYM_BOOLEAN_END, TOK_EOT },
+            new Interpreter_symbol[]/*15 SYM_BOOLEAN_END       */{ TOK_ELSE, TOK_LF, OUT_PUSH, OUT_BR, OUT_SWAP, OUT_DEFL, SYM_MODULE, OUT_POPL, OUT_DEFL, TOK_END_IF, TOK_LF, TOK_EOT },
             new Interpreter_symbol[]/*16 SYM_BOOLEAN_END       */{ OUT_POPL, OUT_DEFL, TOK_END_IF, TOK_LF, TOK_EOT },
             new Interpreter_symbol[]/*17 SYM_PRINT             */{ TOK_PRINT, SYM_EXPRESSION, OUT_PRINT, TOK_LF, TOK_EOT },
-            new Interpreter_symbol[]/*18 SYM_WHILE             */{ TOK_WHILE, SYM_EXPRESSION, OUT_PUSH, OUT_BZ, SYM_MODULE, OUT_POPL, OUT_DEFL, TOK_END_WHILE, TOK_LF, TOK_EOT },
+            new Interpreter_symbol[]/*18 SYM_WHILE             */{ TOK_WHILE, OUT_PUSH, OUT_DEFL, SYM_EXPRESSION, OUT_PUSH, OUT_BZ, TOK_LF, SYM_MODULE, OUT_SWAP, /*OUT_DEFL,*/ OUT_BR, OUT_POPL, OUT_DEFL, TOK_END_WHILE, TOK_LF, TOK_EOT },
             new Interpreter_symbol[]/*19 SYM_EMPTY             */{ TOK_LF, TOK_EOT },
             new Interpreter_symbol[]/*20 SYM_TYPE              */{ TOK_STRING, OUT_STRING, TOK_EOT },
             new Interpreter_symbol[]/*21 SYM_TYPE              */{ TOK_LONG, OUT_LONG, TOK_EOT },
@@ -128,7 +128,7 @@ namespace BASIC_Interpreter_Library {
         /* Max rule index */
         public const int MAX_RULE = 53;
         /* Rule Length */
-        public static int[] RLEN = new int[] { 0, 2, 0, 1, 1, 1, 1, 1, 1, 2, 4, 5, 1, 4, 5, 5, 2, 3, 5, 1, 1, 1, 1, 2, 3, 0, 2, 3, 0, 2, 2, 3, 3, 3, 3, 3, 3, 0, 2, 3, 3, 0, 2, 3, 3, 0, 1, 2, 2, 1, 1, 1, 1, 3 };
+        public static int[] RLEN = new int[] { 0, 2, 0, 1, 1, 1, 1, 1, 1, 2, 4, 5, 1, 4, 5, 4, 2, 3, 5, 1, 1, 1, 1, 2, 3, 0, 2, 3, 0, 2, 2, 3, 3, 3, 3, 3, 3, 0, 2, 3, 3, 0, 2, 3, 3, 0, 1, 2, 2, 1, 1, 1, 1, 3 };
         /* Evaluates actual rule's length */
         public static void get_rule_len() {
             int rule, count;
@@ -205,15 +205,15 @@ namespace BASIC_Interpreter_Library {
             new int[35]/*       <Expression>*/{    0,    0,   23,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,   23,    0,    0,    0,    0,    0,    0,   23,   23,    0,    0,   23,   23,   23,   23,    0 },
             new int[35]/*      <Boolean_end>*/{    0,    0,    0,    0,    0,    0,    0,    0,    0,   15,   16,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
             new int[35]/*      <Logical_AND>*/{    0,    0,   26,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,   26,    0,    0,    0,    0,    0,    0,   26,   26,    0,    0,   26,   26,   26,   26,    0 },
-            new int[35]/*     <Logical_AND.>*/{   25,   25,   25,    0,    0,   25,    0,   25,   25,   25,   25,   25,   25,   25,    0,    0,    0,   24,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,   25 },
+            new int[35]/*     <Logical_AND.>*/{    0,    0,    0,    0,    0,   25,    0,    0,   25,    0,    0,    0,    0,    0,    0,    0,    0,   24,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,   25 },
             new int[35]/*      <Logical_NOT>*/{    0,    0,   30,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,   29,    0,    0,    0,    0,    0,    0,   30,   30,    0,    0,   30,   30,   30,   30,    0 },
-            new int[35]/*     <Logical_NOT.>*/{   28,   28,   28,    0,    0,   28,    0,   28,   28,   28,   28,   28,   28,   28,    0,    0,    0,   28,   27,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,   28 },
+            new int[35]/*     <Logical_NOT.>*/{    0,    0,    0,    0,    0,   28,    0,    0,   28,    0,    0,    0,    0,    0,    0,    0,    0,   28,   27,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,   28 },
             new int[35]/*         <Relation>*/{    0,    0,   38,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,   38,   38,    0,    0,   38,   38,   38,   38,    0 },
-            new int[35]/*        <Relation.>*/{   37,   37,   37,    0,    0,   37,    0,   37,   37,   37,   37,   37,   37,   37,    0,    0,    0,   37,   37,    0,   31,   32,   33,   34,   35,   36,    0,    0,    0,    0,    0,    0,    0,    0,   37 },
+            new int[35]/*        <Relation.>*/{    0,    0,    0,    0,    0,   37,    0,    0,   37,    0,    0,    0,    0,    0,    0,    0,    0,   37,   37,    0,   31,   32,   33,   34,   35,   36,    0,    0,    0,    0,    0,    0,    0,    0,   37 },
             new int[35]/*             <Term>*/{    0,    0,   42,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,   42,   42,    0,    0,   42,   42,   42,   42,    0 },
-            new int[35]/*            <Term.>*/{   41,   41,   41,    0,    0,   41,    0,   41,   41,   41,   41,   41,   41,   41,    0,    0,    0,   41,   41,    0,   41,   41,   41,   41,   41,   41,   39,   40,    0,    0,    0,    0,    0,    0,   41 },
+            new int[35]/*            <Term.>*/{    0,    0,    0,    0,    0,   41,    0,    0,   41,    0,    0,    0,    0,    0,    0,    0,    0,   41,   41,    0,   41,   41,   41,   41,   41,   41,   39,   40,    0,    0,    0,    0,    0,    0,   41 },
             new int[35]/*            <Unary>*/{    0,    0,   46,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,   48,   47,    0,    0,   46,   46,   46,   46,    0 },
-            new int[35]/*           <Unary.>*/{   45,   45,   45,    0,    0,   45,    0,   45,   45,   45,   45,   45,   45,   45,    0,    0,    0,   45,   45,    0,   45,   45,   45,   45,   45,   45,   45,   45,   43,   44,    0,    0,    0,    0,   45 },
+            new int[35]/*           <Unary.>*/{    0,    0,    0,    0,    0,   45,    0,    0,   45,    0,    0,    0,    0,    0,    0,    0,    0,   45,   45,    0,   45,   45,   45,   45,   45,   45,   45,   45,   43,   44,    0,    0,    0,    0,   45 },
             new int[35]/*        <Primitive>*/{    0,    0,   49,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,   50,   51,   52,   53,    0 }
         };
         // признак присутствия
