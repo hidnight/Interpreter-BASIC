@@ -91,7 +91,7 @@ namespace BASIC_Interpreter_Library {
                 // анализ управляющего значения
                 if (t <= 0) {
                     // ошибка
-                    error_stream.Write("\nsyntaxan: failure synta =" + t + ".\n\n");
+                    error_stream.Write("\nОшибка синтаксического анализа. =" + t + ".\n\n");
                     parse_stream.Write("Ошибка синтаксического анализа.");
                     //FlushStreams();
                     return 0;
@@ -269,7 +269,7 @@ namespace BASIC_Interpreter_Library {
                     exe.pop(ref X);
                     j = syms.find(ref X);
                     if (j == ST_NOTFOUND) {
-                        error_stream.Write("exe_pop identifier not found" + ". Строка " + tok.Line_Number + "\n");
+                        error_stream.Write("exe_pop Переменная не найдена" + ". Строка " + tok.Line_Number + "\n");
                         return;
                     }
                     if (Y.Data_Type == Data_type.STDT_BOOL) {

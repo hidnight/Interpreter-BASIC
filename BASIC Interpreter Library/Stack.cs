@@ -29,7 +29,7 @@ namespace BASIC_Interpreter_Library {
         // выталкивает элемент
         public T pop() {
             if (Size < 1)
-                throw new Exception("ststack::pop stack is empty");
+                throw new Exception("ststack::pop Стек пуст.");
             T value = st.Last();
             st.RemoveAt(Size - 1);
             return value;
@@ -37,7 +37,7 @@ namespace BASIC_Interpreter_Library {
         // выталкивает number элементов
         public T pop(int number) {
             if (Size < number)
-                throw new Exception("ststack::pop(int) stack isn't so big as number");
+                throw new Exception("ststack::pop(int) В стеке нет такого количества элементов.");
             T result = st.Last();
             for (int i = number; i > 0; i--) {
                 result = st.Last();
@@ -49,7 +49,7 @@ namespace BASIC_Interpreter_Library {
         public T Top {
             get {
                 if (Size < 1)
-                    throw new Exception("ststack::top stack is empty");
+                    throw new Exception("ststack::top Стек пуст.");
                 return st.Last();
             }
         }

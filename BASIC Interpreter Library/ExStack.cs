@@ -26,7 +26,7 @@ namespace BASIC_Interpreter_Library {
         // выталкивает элемент
         public void pop(ref Token e) {
             if (Size < 1)
-                throw new Exception("exstack::pop exe-stack is empty");
+                throw new Exception("exstack::pop Стек пуст");
             e = (Token)st.Last().Clone();
             st.RemoveAt(Size - 1);
         }

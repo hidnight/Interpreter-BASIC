@@ -164,13 +164,10 @@ namespace BASIC_Interpreter_Library {
                     break;
                 }
                 case CHDOT: {
-                    error_stream.Write("\nlexan: extra dot in float\n\n");
+                    error_stream.Write("\nЛишняя запятая в REAL. Строка " + tok.Line_Number);
                     return 0;
                 }
                 default: {
-                    if (must == 1) {
-                        error_stream.Write("\nlexan: single dot in float\n\n");
-                    }
                     tok.Dbl_val = number / Math.Pow(10, div) + tok.Int_val;
                     return 1;
                 }
@@ -195,7 +192,7 @@ namespace BASIC_Interpreter_Library {
                     }
                 } else {
                     if (cc == EOF) {
-                        error_stream.Write("\nlexan: unexpected end of file in quote\n\n");
+                        error_stream.Write("\nНеожиданный конец файла в QOUTE. Строка "+  tok.Line_Number);
                         return 0;
                     }
                     // LF
@@ -203,7 +200,7 @@ namespace BASIC_Interpreter_Library {
 
                     }*/
                     if (cc < 32) {
-                        error_stream.Write("\nlexan: extra character in quote\n\n");
+                        error_stream.Write("\nНепечатаемый символ в строке. Строка " + tok.Line_Number);
                         return 0;
                     }
                     if (tok.Str_val.Length < MAX_QUOTE)
@@ -287,7 +284,7 @@ namespace BASIC_Interpreter_Library {
                 }
                 default: {
                     tok.Stt = TOK_UNKNOWN;
-                    error_stream.Write("\nlexan: extra character in line\n\n");
+                    error_stream.Write("\nНеожиданный символ. Строка " + tok.Line_Number);
                     return 0;
                 }
                 }
