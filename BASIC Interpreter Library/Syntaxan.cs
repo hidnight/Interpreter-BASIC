@@ -69,9 +69,21 @@ namespace BASIC_Interpreter_Library {
                 s = clear_stack();
                 // получение управляющего значения
                 try {
-                    t = SYNTA[(int)s][(int)tok.Stt];
-                    error_stream.Write("\n s = " + s.ToString() + "\n");
-                    error_stream.Write("\n tok.Stt = " + tok.Stt.ToString() + "\n");
+                    if (s >= TOK_EOT && s <= TOK_LAST &&
+                        tok.Stt >= TOK_EOT && tok.Stt <= TOK_LAST) {
+                        if (s == tok.Stt) {
+                            t = POP;
+                            if (s == TOK_EOT) {
+                                t = ACC;
+                            }
+                        } else {
+                            t = 0;
+                        }
+                    } else {
+                        t = SYNTA[s - TOK_LAST - 1][(int)tok.Stt];
+                    }
+                    error_stream.Write("\n Ожидалось = " + s.ToString() + "\n");
+                    error_stream.Write("\n Получено = " + tok.Stt.ToString() + "\n");
                     error_stream.Write("\n t = " + t.ToString() + "\n");
                 } catch (Exception) {
                     throw;
@@ -80,6 +92,7 @@ namespace BASIC_Interpreter_Library {
                 if (t <= 0) {
                     // ошибка
                     error_stream.Write("\nsyntaxan: failure synta =" + t + ".\n\n");
+                    parse_stream.Write("Ошибка синтаксического анализа.");
                     //FlushStreams();
                     return 0;
                 } else {
@@ -105,14 +118,17 @@ namespace BASIC_Interpreter_Library {
                                     bt = RULE[(int)t][i];
                                     sta.push(bt);
                                 }
-                                error_stream.Write("\nRule " + t + "->");
+                                error_stream.Write("Правило " + t + "->");
                                 for (i = 0; i < n; i++) {
                                     error_stream.Write(" " + RULE[t][i].ToString() + " ");
+                                }
+                                if (n == 0) {
+                                    error_stream.Write("λ");
                                 }
                                 error_stream.WriteLine();
                             } else {
                                 // ошибка управляющей таблицы
-                                error_stream.Write("syntaxan: invalid SYNTA table");
+                                error_stream.Write("syntaxan: Неверная синтаксическая таблица");
                                 //FlushStreams();
                                 return 0;
                             }
@@ -126,7 +142,7 @@ namespace BASIC_Interpreter_Library {
             // выводим содержимое ленты ПОЛИЗ
             error_stream.Write("\nЛента ПОЛИЗ\n" + strip.ToString() + "\n");
             execute();
-            error_stream.Write("\nsyntaxan: success.\n\n");
+            error_stream.Write("\nsyntaxan: успешно.\n\n");
             //FlushStreams();
             return 1;
         }
@@ -238,7 +254,8 @@ namespace BASIC_Interpreter_Library {
                     exe.pop(ref X);
                     j = syms.insert(X);
                     if (j == ST_EXISTS) {
-                        error_stream.Write("\nexe duplicate declaration" + ". Строка " + tok.Line_Number + "\n");
+                        error_stream.Write("\nПовторное объявление переменной" +
+                            ". Строка " + tok.Line_Number + "\n");
                         return;
                     }
                     syms[(int)j].Data_Type = Y.Data_Type;
@@ -271,7 +288,7 @@ namespace BASIC_Interpreter_Library {
                             break;
                         }
                         case Data_type.STDT_QUOTE: {
-                            error_stream.Write("exe переменной типа LONG нельзя присвоить значение типа QUOTE. Строка " + tok.Line_Number + "\n");
+                            error_stream.Write("Переменной типа LONG нельзя присвоить значение типа QUOTE. Строка " + tok.Line_Number + "\n");
                             return;
                         }
                         }
@@ -288,7 +305,7 @@ namespace BASIC_Interpreter_Library {
                             break;
                         }
                         case Data_type.STDT_QUOTE: {
-                            error_stream.Write("exe QOUTE can not be assinged to REAL" + ". Строка " + tok.Line_Number + "\n");
+                            error_stream.Write("Переменной типа REAL нельзя присвоить значение типа QUOTE." + ". Строка " + tok.Line_Number + "\n");
                             return;
                         }
                         }
@@ -552,7 +569,7 @@ namespace BASIC_Interpreter_Library {
                     case OUT_DIV: {
                         if (Y.Data_Type == Data_type.STDT_I4 && Y.Int_val == 0 ||
                             Y.Data_Type == Data_type.STDT_R8 && Y.Dbl_val == 0.0) {
-                            error_stream.Write("exe division by zero" + ". Строка " + tok.Line_Number + "\n");
+                            error_stream.Write("Деление на нуль" + ". Строка " + tok.Line_Number + "\n");
                             return;
                         }
                         switch (Y.Data_Type) {
@@ -1193,7 +1210,7 @@ namespace BASIC_Interpreter_Library {
                     if (X.Bool_val == false) {
                         j = strip.Find_DEF(Y.Int_val);
                         if (j == -1) {
-                            error_stream.Write("exe label not found" + ". Строка " + tok.Line_Number + "\n");
+                            error_stream.Write("Метка не найдена" + ". Строка " + tok.Line_Number + "\n");
                             return;
                         }
                         strip_pointer = j;
@@ -1207,7 +1224,7 @@ namespace BASIC_Interpreter_Library {
                     exe_pop(ref Y);
                     j = strip.Find_DEF(Y.Int_val);
                     if (j == -1) {
-                        error_stream.Write("exe label not found" + ". Строка " + tok.Line_Number + "\n");
+                        error_stream.Write("Метка не найдена" + ". Строка " + tok.Line_Number + "\n");
                         return;
                     }
                     strip_pointer = j;
@@ -1258,7 +1275,7 @@ namespace BASIC_Interpreter_Library {
                 if (e.Stt == OUT_ID) {
                     long j = syms.find(ref e);
                     if (j == ST_NOTFOUND) {
-                        error_stream.Write("exe_pop Идентификатор \"" + e.Name + "\" не найден" + ". Строка " + tok.Line_Number + "\n");
+                        error_stream.Write("Идентификатор \"" + e.Name + "\" не найден" + ". Строка " + tok.Line_Number + "\n");
                         //FlushStreams();
                         return;
                     }
@@ -1281,7 +1298,7 @@ namespace BASIC_Interpreter_Library {
                     }
                     }
                 } else {
-                    error_stream.Write("exe_pop internal error" + ". Строка " + tok.Line_Number + "\n");
+                    error_stream.Write("exe_pop Внутренняя ошибка" + ". Строка " + tok.Line_Number + "\n");
                     //FlushStreams();
                     return;
                 }
