@@ -175,10 +175,11 @@ namespace BASIC_Interpreter_Library {
                 Next_char();
                 // вход по "
                 if (TOT[(byte)cc] == QUOTE) {
+                    Next_char();
                     return 1;
                 } else {
                     if (cc == EOF) {
-                        error_stream.Write("\nНеожиданный конец файла в QOUTE. Строка "+  tok.Line_Number);
+                        error_stream.Write("\nНеожиданный конец файла в QOUTE. Строка " + tok.Line_Number);
                         return 0;
                     }
                     // LF
@@ -213,13 +214,14 @@ namespace BASIC_Interpreter_Library {
                             return 0;
                         }
                         }
-                    }
-                    if (cc < 32) {
-                        error_stream.Write("\nНепечатаемый символ в строке. Строка " + tok.Line_Number);
-                        return 0;
-                    }
-                    if (tok.Str_val.Length < MAX_QUOTE) {
-                        tok.Append((char)cc);
+                    } else {
+                        if (cc < 32) {
+                            error_stream.Write("\nНепечатаемый символ в строке. Строка " + tok.Line_Number);
+                            return 0;
+                        }
+                        if (tok.Str_val.Length < MAX_QUOTE) {
+                            tok.Append((char)cc);
+                        }
                     }
                 }
             }
