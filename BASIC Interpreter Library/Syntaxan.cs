@@ -1329,19 +1329,19 @@ namespace BASIC_Interpreter_Library {
                     exe_pop(ref Y);
                     switch (Y.Data_Type) {
                     case Data_type.STDT_I4: {
-                        parse_stream.WriteLine(Y.Int_val.ToString());
+                        parse_stream.Write(Y.Int_val.ToString());
                         break;
                     }
                     case Data_type.STDT_R8: {
-                        parse_stream.WriteLine(Y.Dbl_val.ToString("R", CultureInfo.InvariantCulture));
+                        parse_stream.Write(Y.Dbl_val.ToString("R", CultureInfo.InvariantCulture));
                         break;
                     }
                     case Data_type.STDT_QUOTE: {
-                        parse_stream.WriteLine(Y.Str_val);
+                        parse_stream.Write(Y.Str_val);
                         break;
                     }
                     case Data_type.STDT_BOOL: {
-                        parse_stream.WriteLine(Y.Bool_val);
+                        parse_stream.Write(Y.Bool_val);
                         break;
                     }
                     default: {
