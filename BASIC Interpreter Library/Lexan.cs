@@ -174,15 +174,8 @@ namespace BASIC_Interpreter_Library {
             while (true) {
                 Next_char();
                 // вход по "
-                if ((TOT[(byte)cc]) == QUOTE) {
-                    Next_char();
-                    if ((TOT[(byte)cc]) != QUOTE) {
-                        return 1;
-                    } else {
-                        if (tok.Str_val.Length < MAX_QUOTE) {
-                            tok.Append((char)((byte)cc));
-                        }
-                    }
+                if (TOT[(byte)cc] == QUOTE) {
+                    return 1;
                 } else {
                     if (cc == EOF) {
                         error_stream.Write("\nНеожиданный конец файла в QOUTE. Строка "+  tok.Line_Number);
@@ -192,19 +185,49 @@ namespace BASIC_Interpreter_Library {
                     /*if (cc == '\n') {
 
                     }*/
+                    if (TOT[(byte)cc] == BSLAS) {
+                        Next_char();
+                        switch ((char)cc) {
+                        case 'n': {
+                            tok.Append('\n');
+                            break;
+                        }
+                        case 't': {
+                            tok.Append('\t');
+                            break;
+                        }
+                        case '\'': {
+                            tok.Append('\'');
+                            break;
+                        }
+                        case '\"': {
+                            tok.Append('\"');
+                            break;
+                        }
+                        case '\\': {
+                            tok.Append('\\');
+                            break;
+                        }
+                        default: {
+                            error_stream.Write("\nНеверная escape-последовательность. Строка " + tok.Line_Number);
+                            return 0;
+                        }
+                        }
+                    }
                     if (cc < 32) {
                         error_stream.Write("\nНепечатаемый символ в строке. Строка " + tok.Line_Number);
                         return 0;
                     }
-                    if (tok.Str_val.Length < MAX_QUOTE)
-                        tok.Append((char)((byte)cc));
+                    if (tok.Str_val.Length < MAX_QUOTE) {
+                        tok.Append((char)cc);
+                    }
                 }
             }
         }
         // принимает операцию
         int is_opera(ref Token tok) {
             while (true) {
-                switch ((char)((byte)cc)) {
+                switch ((char)cc) {
                 case '+': {
                     Next_char();
                     tok.Stt = TOK_ADD;
