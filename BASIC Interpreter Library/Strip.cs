@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using static BASIC_Interpreter_Library.Interpreter_symbol;
 
 namespace BASIC_Interpreter_Library {
@@ -55,7 +56,7 @@ namespace BASIC_Interpreter_Library {
                 builder.Append(" " + st[i].Stt.ToString());
                 switch (st[i].Stt) {
                 case OUT_QUOTE:
-                    builder.Append(" " + st[i].Str_val);
+                    builder.Append(" " + Regex.Unescape(st[i].Str_val));
                     break;
                 case OUT_ID:
                     builder.Append(" " + st[i].Name);
