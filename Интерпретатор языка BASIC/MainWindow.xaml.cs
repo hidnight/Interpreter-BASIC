@@ -4,6 +4,9 @@ using System.Text;
 using System.Windows;
 using BASIC_Interpreter_Library;
 using System.Windows.Forms;
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Highlighting;
+using System.Xml;
 
 namespace Интерпретатор_языка_BASIC {
     /// <summary>
@@ -13,6 +16,15 @@ namespace Интерпретатор_языка_BASIC {
         string FilePath = "";
         OpenFileDialog openFileDialog;
         SaveFileDialog saveFileDialog;
+
+        private void LoadHighlighting(ref TextEditor editor, string file = "BASIC.xshd") {
+            Stream xshd_stream = File.OpenRead(file);
+            XmlTextReader xshd_reader = new XmlTextReader(xshd_stream);
+            editor.SyntaxHighlighting = ICSharpCode.AvalonEdit.Highlighting.Xshd.HighlightingLoader.Load(xshd_reader, HighlightingManager.Instance);
+            xshd_reader.Close();
+            xshd_stream.Close();
+        }
+
         public MainWindow() {
             InitializeComponent();
             openFileDialog = new OpenFileDialog();
@@ -23,6 +35,11 @@ namespace Интерпретатор_языка_BASIC {
             saveFileDialog.RestoreDirectory = false;
             saveFileDialog.AddExtension = true;
             saveFileDialog.DefaultExt = "txt";
+            try {
+                LoadHighlighting(ref Code);
+            } catch (Exception ex) {
+                System.Windows.Forms.MessageBox.Show(ex.Message);
+            }
         }
 
         private void Interpreter_Click(object sender, RoutedEventArgs e) {
@@ -97,6 +114,11 @@ namespace Интерпретатор_языка_BASIC {
                     System.Windows.Forms.MessageBox.Show(ex.Message);
                 }
             }
+        }
+
+        private void BigFont_Click(object sender, RoutedEventArgs e) {
+            Code.TextArea.FontSize = BigFont.IsChecked ? 24 : 14;
+            Output.FontSize = BigFont.IsChecked ? 24 : 14;
         }
     }
 }
