@@ -1,4 +1,4 @@
-﻿using static BASIC_Interpreter_Library.Interpreter_symbol;
+﻿using static BASIC_Interpreter_Library.InterpreterSymbol;
 
 namespace BASIC_Interpreter_Library {
     static class Constants {
@@ -69,68 +69,68 @@ namespace BASIC_Interpreter_Library {
         /* Adapted to C# by Ivan K.*/
         public const byte ST_MAX_RULE_LEN = 16;
         /* Rules */
-        public static readonly Interpreter_symbol[][] RULE = new Interpreter_symbol[54][] {
-            new Interpreter_symbol[]/* 0                       */{ TOK_EOT },
-            new Interpreter_symbol[]/* 1 SYM_MODULE            */{ SYM_STATEMENT, SYM_MODULE, TOK_EOT },
-            new Interpreter_symbol[]/* 2 SYM_MODULE            */{ TOK_EOT },
-            new Interpreter_symbol[]/* 3 SYM_STATEMENT         */{ SYM_ASSIGNMENT, TOK_EOT },
-            new Interpreter_symbol[]/* 4 SYM_STATEMENT         */{ SYM_BOOLEAN, TOK_EOT },
-            new Interpreter_symbol[]/* 5 SYM_STATEMENT         */{ SYM_PRINT, TOK_EOT },
-            new Interpreter_symbol[]/* 6 SYM_STATEMENT         */{ SYM_WHILE, TOK_EOT },
-            new Interpreter_symbol[]/* 7 SYM_STATEMENT         */{ SYM_EMPTY, TOK_EOT },
-            new Interpreter_symbol[]/* 8 SYM_STATEMENT         */{ SYM_DECLARATION, TOK_EOT },
-            new Interpreter_symbol[]/* 9 SYM_DECLARATION       */{ TOK_DIM, SYM_DECLARATION_LIST, TOK_EOT },
-            new Interpreter_symbol[]/*10 SYM_DECLARATION_LIST  */{ TOK_ID, OUT_ID, TOK_AS, SYM_TYPE, OUT_DIM, SYM_DECLARATION_LIST_, TOK_EOT },
-            new Interpreter_symbol[]/*11 SYM_DECLARATION_LIST_ */{ TOK_COMMA, TOK_ID, OUT_ID, TOK_AS, SYM_TYPE, OUT_DIM, SYM_DECLARATION_LIST_, TOK_EOT },
-            new Interpreter_symbol[]/*12 SYM_DECLARATION_LIST_ */{ TOK_LF, TOK_EOT },
-            new Interpreter_symbol[]/*13 SYM_ASSIGNMENT        */{ TOK_ID, OUT_ID, TOK_ASS, SYM_EXPRESSION, OUT_ASS, TOK_LF, TOK_EOT },
-            new Interpreter_symbol[]/*14 SYM_BOOLEAN           */{ TOK_IF, SYM_EXPRESSION, TOK_THEN, TOK_LF, OUT_PUSH, OUT_BZ, SYM_MODULE, SYM_BOOLEAN_END, TOK_EOT },
-            new Interpreter_symbol[]/*15 SYM_BOOLEAN_END       */{ TOK_ELSE, TOK_LF, OUT_PUSH, OUT_BR, OUT_SWAP, OUT_DEFL, SYM_MODULE, OUT_POPL, OUT_DEFL, TOK_END, TOK_IF, TOK_LF, TOK_EOT },
-            new Interpreter_symbol[]/*16 SYM_BOOLEAN_END       */{ OUT_POPL, OUT_DEFL, TOK_END, TOK_IF, TOK_LF, TOK_EOT },
-            new Interpreter_symbol[]/*17 SYM_PRINT             */{ TOK_PRINT, SYM_EXPRESSION, OUT_PRINT, TOK_LF, TOK_EOT },
-            new Interpreter_symbol[]/*18 SYM_WHILE             */{ TOK_WHILE, OUT_PUSH, OUT_DEFL, SYM_EXPRESSION, OUT_PUSH, OUT_BZ, TOK_LF, SYM_MODULE, OUT_SWAP, OUT_BR, OUT_POPL, OUT_DEFL, TOK_END, TOK_WHILE, TOK_LF, TOK_EOT },
-            new Interpreter_symbol[]/*19 SYM_EMPTY             */{ TOK_LF, TOK_EOT },
-            new Interpreter_symbol[]/*20 SYM_TYPE              */{ TOK_STRING, OUT_STRING, TOK_EOT },
-            new Interpreter_symbol[]/*21 SYM_TYPE              */{ TOK_LONG, OUT_LONG, TOK_EOT },
-            new Interpreter_symbol[]/*22 SYM_TYPE              */{ TOK_REAL, OUT_REAL, TOK_EOT },
-            new Interpreter_symbol[]/*23 SYM_EXPRESSION        */{ SYM_LOGICAL_AND, SYM_LOGICAL_AND_, TOK_EOT },
-            new Interpreter_symbol[]/*24 SYM_LOGICAL_AND_      */{ TOK_OR, SYM_LOGICAL_AND, SYM_LOGICAL_AND_, OUT_OR, TOK_EOT },
-            new Interpreter_symbol[]/*25 SYM_LOGICAL_AND_      */{ TOK_EOT },
-            new Interpreter_symbol[]/*26 SYM_LOGICAL_AND       */{ SYM_LOGICAL_NOT, SYM_LOGICAL_NOT_, TOK_EOT },
-            new Interpreter_symbol[]/*27 SYM_LOGICAL_NOT_      */{ TOK_AND, SYM_LOGICAL_NOT, SYM_LOGICAL_NOT_, OUT_AND, TOK_EOT },
-            new Interpreter_symbol[]/*28 SYM_LOGICAL_NOT_      */{ TOK_EOT },
-            new Interpreter_symbol[]/*29 SYM_LOGICAL_NOT       */{ TOK_NOT, SYM_LOGICAL_NOT, OUT_NOT, TOK_EOT },
-            new Interpreter_symbol[]/*30 SYM_LOGICAL_NOT       */{ SYM_RELATION, SYM_RELATION_, TOK_EOT },
-            new Interpreter_symbol[]/*31 SYM_RELATION_         */{ TOK_EQ, SYM_RELATION, SYM_RELATION_, OUT_EQ, TOK_EOT },
-            new Interpreter_symbol[]/*32 SYM_RELATION_         */{ TOK_NE, SYM_RELATION, SYM_RELATION_, OUT_NE, TOK_EOT },
-            new Interpreter_symbol[]/*33 SYM_RELATION_         */{ TOK_LT, SYM_RELATION, SYM_RELATION_, OUT_LT, TOK_EOT },
-            new Interpreter_symbol[]/*34 SYM_RELATION_         */{ TOK_GT, SYM_RELATION, SYM_RELATION_, OUT_GT, TOK_EOT },
-            new Interpreter_symbol[]/*35 SYM_RELATION_         */{ TOK_LE, SYM_RELATION, SYM_RELATION_, OUT_LE, TOK_EOT },
-            new Interpreter_symbol[]/*36 SYM_RELATION_         */{ TOK_GE, SYM_RELATION, SYM_RELATION_, OUT_GE, TOK_EOT },
-            new Interpreter_symbol[]/*37 SYM_RELATION_         */{ TOK_EOT },
-            new Interpreter_symbol[]/*38 SYM_RELATION          */{ SYM_TERM, SYM_TERM_, TOK_EOT },
-            new Interpreter_symbol[]/*39 SYM_TERM_             */{ TOK_ADD, SYM_TERM, SYM_TERM_, OUT_ADD, TOK_EOT },
-            new Interpreter_symbol[]/*40 SYM_TERM_             */{ TOK_SUB, SYM_TERM, SYM_TERM_, OUT_SUB, TOK_EOT },
-            new Interpreter_symbol[]/*41 SYM_TERM_             */{ TOK_EOT },
-            new Interpreter_symbol[]/*42 SYM_TERM              */{ SYM_UNARY, SYM_UNARY_, TOK_EOT },
-            new Interpreter_symbol[]/*43 SYM_UNARY_            */{ TOK_MUL, SYM_UNARY, SYM_UNARY_, OUT_MUL, TOK_EOT },
-            new Interpreter_symbol[]/*44 SYM_UNARY_            */{ TOK_DIV, SYM_UNARY, SYM_UNARY_, OUT_DIV, TOK_EOT },
-            new Interpreter_symbol[]/*45 SYM_UNARY_            */{ TOK_EOT },
-            new Interpreter_symbol[]/*46 SYM_UNARY             */{ SYM_PRIMITIVE, TOK_EOT },
-            new Interpreter_symbol[]/*47 SYM_UNARY             */{ TOK_SUB, SYM_PRIMITIVE, OUT_U_SUB, TOK_EOT },
-            new Interpreter_symbol[]/*48 SYM_UNARY             */{ TOK_ADD, SYM_PRIMITIVE, OUT_U_ADD, TOK_EOT },
-            new Interpreter_symbol[]/*49 SYM_PRIMITIVE         */{ TOK_ID, OUT_ID, TOK_EOT },
-            new Interpreter_symbol[]/*50 SYM_PRIMITIVE         */{ TOK_I4, OUT_I4, TOK_EOT },
-            new Interpreter_symbol[]/*51 SYM_PRIMITIVE         */{ TOK_R8, OUT_R8, TOK_EOT },
-            new Interpreter_symbol[]/*52 SYM_PRIMITIVE         */{ TOK_QUOTE, OUT_QUOTE, TOK_EOT },
-            new Interpreter_symbol[]/*53 SYM_PRIMITIVE         */{ TOK_LP, SYM_EXPRESSION, TOK_RP, TOK_EOT }
+        public static readonly InterpreterSymbol[][] RULE = new InterpreterSymbol[54][] {
+            new InterpreterSymbol[]/* 0                       */{ TOK_EOT },
+            new InterpreterSymbol[]/* 1 SYM_MODULE            */{ SYM_STATEMENT, SYM_MODULE, TOK_EOT },
+            new InterpreterSymbol[]/* 2 SYM_MODULE            */{ TOK_EOT },
+            new InterpreterSymbol[]/* 3 SYM_STATEMENT         */{ SYM_ASSIGNMENT, TOK_EOT },
+            new InterpreterSymbol[]/* 4 SYM_STATEMENT         */{ SYM_BOOLEAN, TOK_EOT },
+            new InterpreterSymbol[]/* 5 SYM_STATEMENT         */{ SYM_PRINT, TOK_EOT },
+            new InterpreterSymbol[]/* 6 SYM_STATEMENT         */{ SYM_WHILE, TOK_EOT },
+            new InterpreterSymbol[]/* 7 SYM_STATEMENT         */{ SYM_EMPTY, TOK_EOT },
+            new InterpreterSymbol[]/* 8 SYM_STATEMENT         */{ SYM_DECLARATION, TOK_EOT },
+            new InterpreterSymbol[]/* 9 SYM_DECLARATION       */{ TOK_DIM, SYM_DECLARATION_LIST, TOK_EOT },
+            new InterpreterSymbol[]/*10 SYM_DECLARATION_LIST  */{ TOK_ID, OUT_ID, TOK_AS, SYM_TYPE, OUT_DIM, SYM_DECLARATION_LIST_, TOK_EOT },
+            new InterpreterSymbol[]/*11 SYM_DECLARATION_LIST_ */{ TOK_COMMA, TOK_ID, OUT_ID, TOK_AS, SYM_TYPE, OUT_DIM, SYM_DECLARATION_LIST_, TOK_EOT },
+            new InterpreterSymbol[]/*12 SYM_DECLARATION_LIST_ */{ TOK_LF, TOK_EOT },
+            new InterpreterSymbol[]/*13 SYM_ASSIGNMENT        */{ TOK_ID, OUT_ID, TOK_ASS, SYM_EXPRESSION, OUT_ASS, TOK_LF, TOK_EOT },
+            new InterpreterSymbol[]/*14 SYM_BOOLEAN           */{ TOK_IF, SYM_EXPRESSION, TOK_THEN, TOK_LF, OUT_PUSH, OUT_BZ, SYM_MODULE, SYM_BOOLEAN_END, TOK_EOT },
+            new InterpreterSymbol[]/*15 SYM_BOOLEAN_END       */{ TOK_ELSE, TOK_LF, OUT_PUSH, OUT_BR, OUT_SWAP, OUT_DEFL, SYM_MODULE, OUT_POPL, OUT_DEFL, TOK_END, TOK_IF, TOK_LF, TOK_EOT },
+            new InterpreterSymbol[]/*16 SYM_BOOLEAN_END       */{ OUT_POPL, OUT_DEFL, TOK_END, TOK_IF, TOK_LF, TOK_EOT },
+            new InterpreterSymbol[]/*17 SYM_PRINT             */{ TOK_PRINT, SYM_EXPRESSION, OUT_PRINT, TOK_LF, TOK_EOT },
+            new InterpreterSymbol[]/*18 SYM_WHILE             */{ TOK_WHILE, OUT_PUSH, OUT_DEFL, SYM_EXPRESSION, OUT_PUSH, OUT_BZ, TOK_LF, SYM_MODULE, OUT_SWAP, OUT_BR, OUT_POPL, OUT_DEFL, TOK_END, TOK_WHILE, TOK_LF, TOK_EOT },
+            new InterpreterSymbol[]/*19 SYM_EMPTY             */{ TOK_LF, TOK_EOT },
+            new InterpreterSymbol[]/*20 SYM_TYPE              */{ TOK_STRING, OUT_STRING, TOK_EOT },
+            new InterpreterSymbol[]/*21 SYM_TYPE              */{ TOK_LONG, OUT_LONG, TOK_EOT },
+            new InterpreterSymbol[]/*22 SYM_TYPE              */{ TOK_REAL, OUT_REAL, TOK_EOT },
+            new InterpreterSymbol[]/*23 SYM_EXPRESSION        */{ SYM_LOGICAL_AND, SYM_LOGICAL_AND_, TOK_EOT },
+            new InterpreterSymbol[]/*24 SYM_LOGICAL_AND_      */{ TOK_OR, SYM_LOGICAL_AND, SYM_LOGICAL_AND_, OUT_OR, TOK_EOT },
+            new InterpreterSymbol[]/*25 SYM_LOGICAL_AND_      */{ TOK_EOT },
+            new InterpreterSymbol[]/*26 SYM_LOGICAL_AND       */{ SYM_LOGICAL_NOT, SYM_LOGICAL_NOT_, TOK_EOT },
+            new InterpreterSymbol[]/*27 SYM_LOGICAL_NOT_      */{ TOK_AND, SYM_LOGICAL_NOT, SYM_LOGICAL_NOT_, OUT_AND, TOK_EOT },
+            new InterpreterSymbol[]/*28 SYM_LOGICAL_NOT_      */{ TOK_EOT },
+            new InterpreterSymbol[]/*29 SYM_LOGICAL_NOT       */{ TOK_NOT, SYM_LOGICAL_NOT, OUT_NOT, TOK_EOT },
+            new InterpreterSymbol[]/*30 SYM_LOGICAL_NOT       */{ SYM_RELATION, SYM_RELATION_, TOK_EOT },
+            new InterpreterSymbol[]/*31 SYM_RELATION_         */{ TOK_EQ, SYM_RELATION, SYM_RELATION_, OUT_EQ, TOK_EOT },
+            new InterpreterSymbol[]/*32 SYM_RELATION_         */{ TOK_NE, SYM_RELATION, SYM_RELATION_, OUT_NE, TOK_EOT },
+            new InterpreterSymbol[]/*33 SYM_RELATION_         */{ TOK_LT, SYM_RELATION, SYM_RELATION_, OUT_LT, TOK_EOT },
+            new InterpreterSymbol[]/*34 SYM_RELATION_         */{ TOK_GT, SYM_RELATION, SYM_RELATION_, OUT_GT, TOK_EOT },
+            new InterpreterSymbol[]/*35 SYM_RELATION_         */{ TOK_LE, SYM_RELATION, SYM_RELATION_, OUT_LE, TOK_EOT },
+            new InterpreterSymbol[]/*36 SYM_RELATION_         */{ TOK_GE, SYM_RELATION, SYM_RELATION_, OUT_GE, TOK_EOT },
+            new InterpreterSymbol[]/*37 SYM_RELATION_         */{ TOK_EOT },
+            new InterpreterSymbol[]/*38 SYM_RELATION          */{ SYM_TERM, SYM_TERM_, TOK_EOT },
+            new InterpreterSymbol[]/*39 SYM_TERM_             */{ TOK_ADD, SYM_TERM, SYM_TERM_, OUT_ADD, TOK_EOT },
+            new InterpreterSymbol[]/*40 SYM_TERM_             */{ TOK_SUB, SYM_TERM, SYM_TERM_, OUT_SUB, TOK_EOT },
+            new InterpreterSymbol[]/*41 SYM_TERM_             */{ TOK_EOT },
+            new InterpreterSymbol[]/*42 SYM_TERM              */{ SYM_UNARY, SYM_UNARY_, TOK_EOT },
+            new InterpreterSymbol[]/*43 SYM_UNARY_            */{ TOK_MUL, SYM_UNARY, SYM_UNARY_, OUT_MUL, TOK_EOT },
+            new InterpreterSymbol[]/*44 SYM_UNARY_            */{ TOK_DIV, SYM_UNARY, SYM_UNARY_, OUT_DIV, TOK_EOT },
+            new InterpreterSymbol[]/*45 SYM_UNARY_            */{ TOK_EOT },
+            new InterpreterSymbol[]/*46 SYM_UNARY             */{ SYM_PRIMITIVE, TOK_EOT },
+            new InterpreterSymbol[]/*47 SYM_UNARY             */{ TOK_SUB, SYM_PRIMITIVE, OUT_U_SUB, TOK_EOT },
+            new InterpreterSymbol[]/*48 SYM_UNARY             */{ TOK_ADD, SYM_PRIMITIVE, OUT_U_ADD, TOK_EOT },
+            new InterpreterSymbol[]/*49 SYM_PRIMITIVE         */{ TOK_ID, OUT_ID, TOK_EOT },
+            new InterpreterSymbol[]/*50 SYM_PRIMITIVE         */{ TOK_I4, OUT_I4, TOK_EOT },
+            new InterpreterSymbol[]/*51 SYM_PRIMITIVE         */{ TOK_R8, OUT_R8, TOK_EOT },
+            new InterpreterSymbol[]/*52 SYM_PRIMITIVE         */{ TOK_QUOTE, OUT_QUOTE, TOK_EOT },
+            new InterpreterSymbol[]/*53 SYM_PRIMITIVE         */{ TOK_LP, SYM_EXPRESSION, TOK_RP, TOK_EOT }
         };
         /* Max rule index */
         public const int MAX_RULE = 53;
         /* Rule Length */
         public static int[] RLEN = new int[] { 0, 2, 0, 1, 1, 1, 1, 1, 1, 2, 4, 5, 1, 4, 6, 6, 2, 3, 7, 1, 1, 1, 1, 2, 3, 0, 2, 3, 0, 2, 2, 3, 3, 3, 3, 3, 3, 0, 2, 3, 3, 0, 2, 3, 3, 0, 1, 2, 2, 1, 1, 1, 1, 3 };
         /* Evaluates actual rule's length */
-        public static void get_rule_len() {
+        public static void GetRuleLen() {
             int rule, count;
             for (rule = 1; rule < RULE.Length; rule++) {
                 for (count = 0; count < RULE[rule].Length; count++) {
@@ -146,7 +146,7 @@ namespace BASIC_Interpreter_Library {
         /* POP CODE */
         public const int POP = 254;
         /*START SYMBOL */
-        public const Interpreter_symbol START = SYM_MODULE;
+        public const InterpreterSymbol START = SYM_MODULE;
         /* Syntax Table SYNTA (LL-analysis) */
         public static readonly int[][] SYNTA = new int[][] {
                      /*                        EOT [dim]  [id]  [as]   [,]  [LF]   [=]  [if] [then [else [end] [prin [whil [STRI [LONG [REAL  [or] [and] [not]  [==]  [<>]   [<]   [>]  [<=]  [>=]   [+]   [-]   [*]   [/]  [I4]  [R8] [QUOT   [(]   [)] */

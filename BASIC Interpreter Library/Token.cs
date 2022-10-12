@@ -1,6 +1,6 @@
 ﻿using static BASIC_Interpreter_Library.Constants;
-using static BASIC_Interpreter_Library.Interpreter_symbol;
-using static BASIC_Interpreter_Library.Data_type;
+using static BASIC_Interpreter_Library.InterpreterSymbol;
+using static BASIC_Interpreter_Library.DataType;
 using System;
 
 namespace BASIC_Interpreter_Library {
@@ -10,20 +10,20 @@ namespace BASIC_Interpreter_Library {
         }
         public void Reset() {
             Stt = TOK_EOT;
-            Int_val = 0;
-            Dbl_val = 0;
-            Bool_val = false;
-            Data_Type = STDT_NULL;
-            Line_Number = 0;
-            Str_val = "";
+            IntVal = 0;
+            DblVal = 0;
+            BoolVal = false;
+            DataType = STDT_NULL;
+            LineNumber = 0;
+            StrVal = "";
             Name = "";
         }
 
         // добавляет символ
         public bool Append(char c) {
-            int len = Str_val.Length;
+            int len = StrVal.Length;
             if (len <= MAX_QUOTE) {
-                Str_val += c;
+                StrVal += c;
                 return true;
             }
             return false;
@@ -33,31 +33,31 @@ namespace BASIC_Interpreter_Library {
             return MemberwiseClone();
         }
 
-        public Interpreter_symbol Stt {
+        public InterpreterSymbol Stt {
             get;
             set;
         }
-        public long Int_val {
+        public long IntVal {
             get;
             set;
         }
-        public double Dbl_val {
+        public double DblVal {
             get;
             set;
         }
-        public bool Bool_val {
+        public bool BoolVal {
             get;
             set;
         }
-        public string Str_val {
+        public string StrVal {
             get;
             set;
         }
-        public Data_type Data_Type {
+        public DataType DataType {
             get;
             set;
         }
-        public ulong Line_Number {
+        public ulong LineNumber {
             get;
             set;
         }

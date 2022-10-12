@@ -1,5 +1,5 @@
 ﻿namespace BASIC_Interpreter_Library {
-    public enum Interpreter_symbol {
+    public enum InterpreterSymbol {
         OUT_START = 9997,
         // комментарий
         TOK_COMMENT,

@@ -2,15 +2,15 @@
 using System.Globalization;
 using System.IO;
 using static BASIC_Interpreter_Library.Constants;
-using static BASIC_Interpreter_Library.Interpreter_symbol;
+using static BASIC_Interpreter_Library.InterpreterSymbol;
 
 namespace BASIC_Interpreter_Library {
     /* LL */
     public class Syntaxan {
         // входной поток
-        private StreamWriter parse_stream;
+        private StreamWriter ParseStream;
         // поток ошибок
-        private StreamWriter error_stream;
+        private StreamWriter ErrorStream;
         // лексический анализатор
         private Lexan lex;
         // текущий токен
@@ -18,7 +18,7 @@ namespace BASIC_Interpreter_Library {
         // стек меток
         private Stack<int> stl = new Stack<int>();
         // стек МП-автомата
-        private Stack<Interpreter_symbol> sta = new Stack<Interpreter_symbol>();
+        private Stack<InterpreterSymbol> sta = new Stack<InterpreterSymbol>();
         // таблица символов
         private Syms syms;
         // исполняющий стек
@@ -28,8 +28,8 @@ namespace BASIC_Interpreter_Library {
         // конструктор
         public Syntaxan(ref Lexan lex, ref StreamWriter parse_stream, ref StreamWriter error_stream) {
             this.lex = lex;
-            this.parse_stream = parse_stream;
-            this.error_stream = error_stream;
+            this.ParseStream = parse_stream;
+            this.ErrorStream = error_stream;
             syms = new Syms();
             exe = new ExStack();
             strip = new Strip();
@@ -40,29 +40,29 @@ namespace BASIC_Interpreter_Library {
             error_stream.Flush();
         }*/
         // LL(1) трансляция в ПОЛИЗ
-        public int parse() {
-            if (next_token() == 0)
+        public int Parse() {
+            if (NextToken() == 0)
                 return 0;
             // вспомогательные переменные
             // i - итератор
             // n - длина правила
             int i, n;
-            Interpreter_symbol at = TOK_EOT, bt = TOK_EOT;
+            InterpreterSymbol at = TOK_EOT, bt = TOK_EOT;
             // символ на стеке
-            Interpreter_symbol s = 0;
+            InterpreterSymbol s = 0;
             // значение из управляющей таблицы
             int t = 0;
             // предварительные действия
             // уточнение длины правил
-            get_rule_len();
+            GetRuleLen();
             // проталкивание дна стека
-            sta.push(TOK_EOT);
+            sta.Push(TOK_EOT);
             // проталкивание аксиомы
-            sta.push(START);
+            sta.Push(START);
             // работа LL автомата
             while (true) {
                 // состояние на стеке
-                s = clear_stack();
+                s = ClearStack();
                 // получение управляющего значения
                 try {
                     if (s >= TOK_EOT && s <= TOK_LAST &&
@@ -78,17 +78,17 @@ namespace BASIC_Interpreter_Library {
                     } else {
                         t = SYNTA[s - TOK_LAST - 1][(int)tok.Stt];
                     }
-                    error_stream.Write("\n Ожидалось = " + s.ToString() + "\n");
-                    error_stream.Write("\n Получено = " + tok.Stt.ToString() + "\n");
-                    error_stream.Write("\n t = " + t.ToString() + "\n");
+                    ErrorStream.Write("\n Ожидалось = " + s.ToString() + "\n");
+                    ErrorStream.Write("\n Получено = " + tok.Stt.ToString() + "\n");
+                    ErrorStream.Write("\n t = " + t.ToString() + "\n");
                 } catch (Exception) {
                     throw;
                 }
                 // анализ управляющего значения
                 if (t <= 0) {
                     // ошибка
-                    error_stream.Write("\nОшибка синтаксического анализа. =" + t + ".\n\n");
-                    parse_stream.Write("Ошибка синтаксического анализа.");
+                    ErrorStream.Write("\nОшибка синтаксического анализа. =" + t + ".\n\n");
+                    ParseStream.Write("Ошибка синтаксического анализа.");
                     //FlushStreams();
                     return 0;
                 } else {
@@ -98,33 +98,33 @@ namespace BASIC_Interpreter_Library {
                     } else {
                         if (t == POP) {
                             // выброс
-                            at = sta.pop();
+                            at = sta.Pop();
                             // выталкиваем операционные символы
-                            clear_stack();
+                            ClearStack();
                             // следующий токен
-                            if (next_token() == 0) {
+                            if (NextToken() == 0) {
                                 return 0;
                             }
                         } else {
                             if (t <= MAX_RULE) {
                                 // правило
-                                at = sta.pop();
+                                at = sta.Pop();
                                 n = RLEN[(int)t];
                                 for (i = n - 1; i >= 0; i--) {
                                     bt = RULE[(int)t][i];
-                                    sta.push(bt);
+                                    sta.Push(bt);
                                 }
-                                error_stream.Write("Правило " + t + "->");
+                                ErrorStream.Write("Правило " + t + "->");
                                 for (i = 0; i < n; i++) {
-                                    error_stream.Write(" " + RULE[t][i].ToString() + " ");
+                                    ErrorStream.Write(" " + RULE[t][i].ToString() + " ");
                                 }
                                 if (n == 0) {
-                                    error_stream.Write("λ");
+                                    ErrorStream.Write("λ");
                                 }
-                                error_stream.WriteLine();
+                                ErrorStream.WriteLine();
                             } else {
                                 // ошибка управляющей таблицы
-                                error_stream.Write("syntaxan: Неверная синтаксическая таблица");
+                                ErrorStream.Write("syntaxan: Неверная синтаксическая таблица");
                                 //FlushStreams();
                                 return 0;
                             }
@@ -134,38 +134,38 @@ namespace BASIC_Interpreter_Library {
             }
             
             // записываем конец ленты ПОЛИЗ
-            out_(OUT_END);
+            PutOnStrip(OUT_END);
             // выводим содержимое ленты ПОЛИЗ
-            error_stream.Write("\nЛента ПОЛИЗ\n" + strip.ToString() + "\n");
-            execute();
-            error_stream.Write("\nsyntaxan: успешно.\n\n");
+            ErrorStream.Write("\nЛента ПОЛИЗ\n" + strip.ToString() + "\n");
+            Execute();
+            ErrorStream.Write("\nsyntaxan: успешно.\n\n");
             //FlushStreams();
             return 1;
         }
         // запись символа на ленту ПОЛИЗ
-        void out_(Interpreter_symbol tt) {
+        private void PutOnStrip(InterpreterSymbol tt) {
             int i = 0, j = 0;
             Token t = (Token)tok.Clone();
             t.Stt = tt;
             switch (tt) {
             case OUT_PUSH: {
-                j = strip.New_label();
-                stl.push(j);
-                t.Int_val = j;
+                j = strip.NewLabel();
+                stl.Push(j);
+                t.IntVal = j;
                 t.Stt = OUT_LABEL;
                 break;
             }
             case OUT_POPL: {
-                j = stl.pop();
-                t.Int_val = j;
+                j = stl.Pop();
+                t.IntVal = j;
                 t.Stt = OUT_LABEL;
                 break;
             }
             case OUT_SWAP: {
-                i = stl.pop();
-                j = stl.pop();
-                stl.push(i);
-                t.Int_val = j;
+                i = stl.Pop();
+                j = stl.Pop();
+                stl.Push(i);
+                t.IntVal = j;
                 t.Stt = OUT_LABEL;
                 break;
             }
@@ -173,22 +173,22 @@ namespace BASIC_Interpreter_Library {
             strip.Add(t);
         }
         // выводит операционные символы со стека
-        Interpreter_symbol clear_stack() {
-            Interpreter_symbol s;
+        private InterpreterSymbol ClearStack() {
+            InterpreterSymbol s;
             while ((s = sta.Top) > SYM_LAST) {
-                s = sta.pop();
-                out_(s);
+                s = sta.Pop();
+                PutOnStrip(s);
             }
             return s;
         }
         // исполняющая машина ПОЛИЗ
-        void execute() {
+        private void Execute() {
             // счетчик операций ПОЛИЗ
             long it_counter = 1;
             // указатель ленты ПОЛИЗ
             long strip_pointer = 1;
             // текущий элемент ПОЛИЗ
-            Interpreter_symbol stt;
+            InterpreterSymbol stt;
             // переменные для вычислений
             Token X = new Token(), Y = new Token();
             // вспомогательные
@@ -202,7 +202,7 @@ namespace BASIC_Interpreter_Library {
                 stt = strip[(int)strip_pointer].Stt;
                 switch (stt) {
                 case OUT_END: {
-                    error_stream.Write("\nВыполнение завершено.\n\n");
+                    ErrorStream.Write("\nВыполнение завершено.\n\n");
                     return;
                 }
                 case OUT_ID:
@@ -217,108 +217,108 @@ namespace BASIC_Interpreter_Library {
                     switch (stt) {
                     case OUT_R8:
                     case OUT_REAL: {
-                        e.Data_Type = Data_type.STDT_R8;
+                        e.DataType = DataType.STDT_R8;
                         break;
                     }
                     case OUT_I4:
                     case OUT_LONG: {
-                        e.Data_Type = Data_type.STDT_I4;
+                        e.DataType = DataType.STDT_I4;
                         break;
                     }
                     case OUT_QUOTE:
                     case OUT_STRING: {
-                        e.Data_Type = Data_type.STDT_QUOTE;
+                        e.DataType = DataType.STDT_QUOTE;
                         break;
                     }
                     case OUT_ID: {
                         break;
                     }
                     default: {
-                        e.Data_Type = Data_type.STDT_NULL;
+                        e.DataType = DataType.STDT_NULL;
                         break;
                     }
                     }
-                    exe.push(e);
+                    exe.Push(e);
                     // следующий элемент ленты
                     strip_pointer++;
                     break;
                 }
                 case OUT_DIM: {
                     // тип
-                    exe.pop(ref Y);
+                    exe.Pop(ref Y);
                     // ID
-                    exe.pop(ref X);
-                    j = syms.insert(X);
+                    exe.Pop(ref X);
+                    j = syms.Insert(X);
                     if (j == ST_EXISTS) {
-                        error_stream.Write("\nПовторное объявление переменной" +
-                            ". Строка " + tok.Line_Number + "\n");
+                        ErrorStream.Write("\nПовторное объявление переменной" +
+                            ". Строка " + tok.LineNumber + "\n");
                         return;
                     }
-                    syms[(int)j].Data_Type = Y.Data_Type;
+                    syms[(int)j].DataType = Y.DataType;
                     strip_pointer++;
                     break;
                 }
                 case OUT_ASS: {
                     // значение
-                    exe_pop(ref Y);
+                    ExePop(ref Y);
                     // ID
-                    exe.pop(ref X);
-                    j = syms.find(ref X);
+                    exe.Pop(ref X);
+                    j = syms.Find(ref X);
                     if (j == ST_NOTFOUND) {
-                        error_stream.Write("exe_pop Переменная не найдена" + ". Строка " + tok.Line_Number + "\n");
+                        ErrorStream.Write("exe_pop Переменная не найдена" + ". Строка " + tok.LineNumber + "\n");
                         return;
                     }
-                    if (Y.Data_Type == Data_type.STDT_BOOL) {
-                        error_stream.Write("Невозможно присвоить булево значение" + ". Строка " + tok.Line_Number + "\n");
+                    if (Y.DataType == DataType.STDT_BOOL) {
+                        ErrorStream.Write("Невозможно присвоить булево значение" + ". Строка " + tok.LineNumber + "\n");
                         return;
                     }
-                    switch (X.Data_Type) {
-                    case Data_type.STDT_I4: {
-                        switch (Y.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            syms[(int)j].Int_val = Y.Int_val;
+                    switch (X.DataType) {
+                    case DataType.STDT_I4: {
+                        switch (Y.DataType) {
+                        case DataType.STDT_I4: {
+                            syms[(int)j].IntVal = Y.IntVal;
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            syms[(int)j].Int_val = (int)Y.Dbl_val;
+                        case DataType.STDT_R8: {
+                            syms[(int)j].IntVal = (int)Y.DblVal;
                             break;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Переменной типа LONG нельзя присвоить значение типа QUOTE. Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Переменной типа LONG нельзя присвоить значение типа QUOTE. Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
                         break;
                     }
-                    case Data_type.STDT_R8: {
-                        switch (Y.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            syms[(int)j].Dbl_val = Y.Int_val;
+                    case DataType.STDT_R8: {
+                        switch (Y.DataType) {
+                        case DataType.STDT_I4: {
+                            syms[(int)j].DblVal = Y.IntVal;
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            syms[(int)j].Dbl_val = Y.Dbl_val;
+                        case DataType.STDT_R8: {
+                            syms[(int)j].DblVal = Y.DblVal;
                             break;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Переменной типа REAL нельзя присвоить значение типа QUOTE." + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Переменной типа REAL нельзя присвоить значение типа QUOTE." + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
                         break;
                     }
-                    case Data_type.STDT_QUOTE: {
-                        switch (Y.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            syms[(int)j].Str_val = Y.Int_val.ToString();
+                    case DataType.STDT_QUOTE: {
+                        switch (Y.DataType) {
+                        case DataType.STDT_I4: {
+                            syms[(int)j].StrVal = Y.IntVal.ToString();
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            syms[(int)j].Str_val = Y.Dbl_val.ToString("R", CultureInfo.InvariantCulture);
+                        case DataType.STDT_R8: {
+                            syms[(int)j].StrVal = Y.DblVal.ToString("R", CultureInfo.InvariantCulture);
                             break;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            syms[(int)j].Str_val = Y.Str_val;
+                        case DataType.STDT_QUOTE: {
+                            syms[(int)j].StrVal = Y.StrVal;
                             break;
                         }
                         }
@@ -341,112 +341,112 @@ namespace BASIC_Interpreter_Library {
                 case OUT_AND:
                 case OUT_OR: {
                     // правый операнд
-                    exe_pop(ref Y);
+                    ExePop(ref Y);
                     // левый операнд
-                    exe_pop(ref X);
+                    ExePop(ref X);
                     switch (stt) {
                     case OUT_ADD: {
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Int_val += Y.Int_val;
+                        switch (X.DataType) {
+                        case DataType.STDT_I4: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.IntVal += Y.IntVal;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Data_Type = Data_type.STDT_R8;
-                                X.Dbl_val = X.Int_val + Y.Dbl_val;
+                            case DataType.STDT_R8: {
+                                X.DataType = DataType.STDT_R8;
+                                X.DblVal = X.IntVal + Y.DblVal;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                X.Data_Type = Data_type.STDT_QUOTE;
-                                X.Str_val = X.Int_val + Y.Str_val;
+                            case DataType.STDT_QUOTE: {
+                                X.DataType = DataType.STDT_QUOTE;
+                                X.StrVal = X.IntVal + Y.StrVal;
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сложить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сложить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Dbl_val += Y.Int_val;
+                        case DataType.STDT_R8: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.DblVal += Y.IntVal;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Dbl_val += Y.Dbl_val;
+                            case DataType.STDT_R8: {
+                                X.DblVal += Y.DblVal;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                X.Data_Type = Data_type.STDT_QUOTE;
-                                X.Str_val = X.Dbl_val + Y.Str_val;
+                            case DataType.STDT_QUOTE: {
+                                X.DataType = DataType.STDT_QUOTE;
+                                X.StrVal = X.DblVal + Y.StrVal;
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сложить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сложить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Str_val += Y.Int_val.ToString();
+                        case DataType.STDT_QUOTE: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.StrVal += Y.IntVal.ToString();
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Str_val += Y.Dbl_val.ToString("R", CultureInfo.InvariantCulture);
+                            case DataType.STDT_R8: {
+                                X.StrVal += Y.DblVal.ToString("R", CultureInfo.InvariantCulture);
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                X.Str_val += Y.Str_val;
+                            case DataType.STDT_QUOTE: {
+                                X.StrVal += Y.StrVal;
                                 break;
                             }
-                            case Data_type.STDT_BOOL: {
-                                X.Str_val += Y.Bool_val;
+                            case DataType.STDT_BOOL: {
+                                X.StrVal += Y.BoolVal;
                                 break;
                             }
                             default: {
-                                error_stream.Write("Неверныйй тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверныйй тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_BOOL: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4:
-                            case Data_type.STDT_R8:
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сложить с булевым значением" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4:
+                            case DataType.STDT_R8:
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сложить с булевым значением" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                X.Data_Type = Data_type.STDT_QUOTE;
-                                X.Str_val = X.Bool_val + Y.Str_val;
+                            case DataType.STDT_QUOTE: {
+                                X.DataType = DataType.STDT_QUOTE;
+                                X.StrVal = X.BoolVal + Y.StrVal;
                                 break;
                             }
                             default: {
-                                error_stream.Write("Неверныйй тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверныйй тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
                         default: {
-                            error_stream.Write("Неверныйй тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            ErrorStream.Write("Неверныйй тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
@@ -455,63 +455,63 @@ namespace BASIC_Interpreter_Library {
 
                     case OUT_SUB: {
 
-                        switch (Y.Data_Type) {
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно вычесть число и строку" + ". Строка " + tok.Line_Number + "\n");
+                        switch (Y.DataType) {
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно вычесть число и строку" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_BOOL: {
-                            error_stream.Write("Невозможно вычесть из булева значения" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            ErrorStream.Write("Невозможно вычесть из булева значения" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
 
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Int_val -= Y.Int_val;
+                        switch (X.DataType) {
+                        case DataType.STDT_I4: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.IntVal -= Y.IntVal;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Data_Type = Data_type.STDT_R8;
-                                X.Dbl_val = X.Int_val - Y.Dbl_val;
+                            case DataType.STDT_R8: {
+                                X.DataType = DataType.STDT_R8;
+                                X.DblVal = X.IntVal - Y.DblVal;
                                 break;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Dbl_val -= Y.Int_val;
+                        case DataType.STDT_R8: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.DblVal -= Y.IntVal;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Dbl_val -= Y.Dbl_val;
+                            case DataType.STDT_R8: {
+                                X.DblVal -= Y.DblVal;
                                 break;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно вычесть из строки" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно вычесть из строки" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_BOOL: {
-                            error_stream.Write("Невозможно вычесть из булева значения" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            ErrorStream.Write("Невозможно вычесть из булева значения" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         default: {
-                            error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
@@ -520,63 +520,63 @@ namespace BASIC_Interpreter_Library {
 
                     case OUT_MUL: {
 
-                        switch (Y.Data_Type) {
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно умножить на строку" + ". Строка " + tok.Line_Number + "\n");
+                        switch (Y.DataType) {
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно умножить на строку" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_BOOL: {
-                            error_stream.Write("Невозможно умножить на булево значение" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            ErrorStream.Write("Невозможно умножить на булево значение" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
 
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Int_val *= Y.Int_val;
+                        switch (X.DataType) {
+                        case DataType.STDT_I4: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.IntVal *= Y.IntVal;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Data_Type = Data_type.STDT_R8;
-                                X.Dbl_val = X.Int_val * Y.Dbl_val;
+                            case DataType.STDT_R8: {
+                                X.DataType = DataType.STDT_R8;
+                                X.DblVal = X.IntVal * Y.DblVal;
                                 break;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Dbl_val *= Y.Int_val;
+                        case DataType.STDT_R8: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.DblVal *= Y.IntVal;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Dbl_val *= Y.Dbl_val;
+                            case DataType.STDT_R8: {
+                                X.DblVal *= Y.DblVal;
                                 break;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно умножить строку" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно умножить строку" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_BOOL: {
-                            error_stream.Write("Невозможно умножить булево значение" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            ErrorStream.Write("Невозможно умножить булево значение" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         default: {
-                            error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
@@ -584,67 +584,67 @@ namespace BASIC_Interpreter_Library {
                     }
 
                     case OUT_DIV: {
-                        if (Y.Data_Type == Data_type.STDT_I4 && Y.Int_val == 0 ||
-                            Y.Data_Type == Data_type.STDT_R8 && Y.Dbl_val == 0.0) {
-                            error_stream.Write("Деление на нуль" + ". Строка " + tok.Line_Number + "\n");
+                        if (Y.DataType == DataType.STDT_I4 && Y.IntVal == 0 ||
+                            Y.DataType == DataType.STDT_R8 && Y.DblVal == 0.0) {
+                            ErrorStream.Write("Деление на нуль" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        switch (Y.Data_Type) {
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно поделить на строку" + ". Строка " + tok.Line_Number + "\n");
+                        switch (Y.DataType) {
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно поделить на строку" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_BOOL: {
-                            error_stream.Write("Невозможно поделить на булево значение" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            ErrorStream.Write("Невозможно поделить на булево значение" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Int_val /= Y.Int_val;
+                        switch (X.DataType) {
+                        case DataType.STDT_I4: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.IntVal /= Y.IntVal;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Data_Type = Data_type.STDT_R8;
-                                X.Dbl_val = X.Int_val / Y.Dbl_val;
+                            case DataType.STDT_R8: {
+                                X.DataType = DataType.STDT_R8;
+                                X.DblVal = X.IntVal / Y.DblVal;
                                 break;
                             }
                             default: {
-                                error_stream.Write("Неверныйй тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверныйй тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Dbl_val /= Y.Int_val;
+                        case DataType.STDT_R8: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.DblVal /= Y.IntVal;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Dbl_val /= Y.Dbl_val;
+                            case DataType.STDT_R8: {
+                                X.DblVal /= Y.DblVal;
                                 break;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно поделить строку" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно поделить строку" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_BOOL: {
-                            error_stream.Write("Невозможно поделить булево значение" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            ErrorStream.Write("Невозможно поделить булево значение" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         default: {
-                            error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
@@ -652,108 +652,108 @@ namespace BASIC_Interpreter_Library {
                     }
 
                     case OUT_EQ: {
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Bool_val = X.Int_val == Y.Int_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                        switch (X.DataType) {
+                        case DataType.STDT_I4: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.BoolVal = X.IntVal == Y.IntVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Bool_val = ((double)X.Int_val) == Y.Dbl_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_R8: {
+                                X.BoolVal = ((double)X.IntVal) == Y.DblVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Bool_val = X.Dbl_val == (double)Y.Int_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                        case DataType.STDT_R8: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.BoolVal = X.DblVal == (double)Y.IntVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Bool_val = X.Dbl_val == Y.Dbl_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_R8: {
+                                X.BoolVal = X.DblVal == Y.DblVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4:
-                            case Data_type.STDT_R8: {
-                                error_stream.Write("Невозможно сравнить строку и число" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_QUOTE: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4:
+                            case DataType.STDT_R8: {
+                                ErrorStream.Write("Невозможно сравнить строку и число" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                X.Bool_val = X.Str_val == Y.Str_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_QUOTE: {
+                                X.BoolVal = X.StrVal == Y.StrVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить строку и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить строку и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_BOOL: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4:
-                            case Data_type.STDT_R8: {
-                                error_stream.Write("Невозможно сравнить булево значение и число" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4:
+                            case DataType.STDT_R8: {
+                                ErrorStream.Write("Невозможно сравнить булево значение и число" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить булево значение и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить булево значение и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                X.Bool_val = X.Bool_val == Y.Bool_val;
+                            case DataType.STDT_BOOL: {
+                                X.BoolVal = X.BoolVal == Y.BoolVal;
                                 break;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
                         default: {
-                            error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
@@ -761,108 +761,108 @@ namespace BASIC_Interpreter_Library {
                     }
 
                     case OUT_NE: {
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Bool_val = X.Int_val != Y.Int_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                        switch (X.DataType) {
+                        case DataType.STDT_I4: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.BoolVal = X.IntVal != Y.IntVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Bool_val = X.Int_val != Y.Dbl_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_R8: {
+                                X.BoolVal = X.IntVal != Y.DblVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Bool_val = X.Dbl_val != Y.Int_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                        case DataType.STDT_R8: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.BoolVal = X.DblVal != Y.IntVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Bool_val = X.Dbl_val != Y.Dbl_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_R8: {
+                                X.BoolVal = X.DblVal != Y.DblVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4:
-                            case Data_type.STDT_R8: {
-                                error_stream.Write("Невозможно сравнить строку и число" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_QUOTE: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4:
+                            case DataType.STDT_R8: {
+                                ErrorStream.Write("Невозможно сравнить строку и число" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                X.Bool_val = X.Str_val != Y.Str_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_QUOTE: {
+                                X.BoolVal = X.StrVal != Y.StrVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить строку и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить строку и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_BOOL: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4:
-                            case Data_type.STDT_R8: {
-                                error_stream.Write("Невозможно сравнить булево значение и число" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4:
+                            case DataType.STDT_R8: {
+                                ErrorStream.Write("Невозможно сравнить булево значение и число" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить булево значение и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить булево значение и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                X.Bool_val = X.Bool_val != Y.Bool_val;
+                            case DataType.STDT_BOOL: {
+                                X.BoolVal = X.BoolVal != Y.BoolVal;
                                 break;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
                         default: {
-                            error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
@@ -870,71 +870,71 @@ namespace BASIC_Interpreter_Library {
                     }
 
                     case OUT_LT: {
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Bool_val = X.Int_val < Y.Int_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                        switch (X.DataType) {
+                        case DataType.STDT_I4: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.BoolVal = X.IntVal < Y.IntVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Bool_val = X.Int_val < Y.Dbl_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_R8: {
+                                X.BoolVal = X.IntVal < Y.DblVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Bool_val = X.Dbl_val < Y.Int_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                        case DataType.STDT_R8: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.BoolVal = X.DblVal < Y.IntVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Bool_val = X.Dbl_val < Y.Dbl_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_R8: {
+                                X.BoolVal = X.DblVal < Y.DblVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно применить < к строке" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно применить < к строке" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_BOOL: {
-                            error_stream.Write("Невозможно применить < к булевому значению" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            ErrorStream.Write("Невозможно применить < к булевому значению" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         default: {
-                            error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
@@ -942,71 +942,71 @@ namespace BASIC_Interpreter_Library {
                     }
 
                     case OUT_GT: {
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Bool_val = X.Int_val > Y.Int_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                        switch (X.DataType) {
+                        case DataType.STDT_I4: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.BoolVal = X.IntVal > Y.IntVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Bool_val = X.Int_val > Y.Dbl_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_R8: {
+                                X.BoolVal = X.IntVal > Y.DblVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Bool_val = X.Dbl_val > Y.Int_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                        case DataType.STDT_R8: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.BoolVal = X.DblVal > Y.IntVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Bool_val = X.Dbl_val > Y.Dbl_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_R8: {
+                                X.BoolVal = X.DblVal > Y.DblVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно применить > к строке" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно применить > к строке" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_BOOL: {
-                            error_stream.Write("Невозможно применить > к булевому значению" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            ErrorStream.Write("Невозможно применить > к булевому значению" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         default: {
-                            error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
@@ -1014,71 +1014,71 @@ namespace BASIC_Interpreter_Library {
                     }
 
                     case OUT_LE: {
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Bool_val = X.Int_val <= Y.Int_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                        switch (X.DataType) {
+                        case DataType.STDT_I4: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.BoolVal = X.IntVal <= Y.IntVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Bool_val = X.Int_val <= Y.Dbl_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_R8: {
+                                X.BoolVal = X.IntVal <= Y.DblVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Bool_val = X.Dbl_val <= Y.Int_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                        case DataType.STDT_R8: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.BoolVal = X.DblVal <= Y.IntVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Bool_val = X.Dbl_val <= Y.Dbl_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_R8: {
+                                X.BoolVal = X.DblVal <= Y.DblVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно применить <= к строке" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно применить <= к строке" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_BOOL: {
-                            error_stream.Write("Невозможно применить <= к булевому значению" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            ErrorStream.Write("Невозможно применить <= к булевому значению" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         default: {
-                            error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
@@ -1086,71 +1086,71 @@ namespace BASIC_Interpreter_Library {
                     }
 
                     case OUT_GE: {
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Bool_val = X.Int_val >= Y.Int_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                        switch (X.DataType) {
+                        case DataType.STDT_I4: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.BoolVal = X.IntVal >= Y.IntVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Bool_val = X.Int_val >= Y.Dbl_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_R8: {
+                                X.BoolVal = X.IntVal >= Y.DblVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                X.Bool_val = X.Dbl_val >= Y.Int_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                        case DataType.STDT_R8: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                X.BoolVal = X.DblVal >= Y.IntVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_R8: {
-                                X.Bool_val = X.Dbl_val >= Y.Dbl_val;
-                                X.Data_Type = Data_type.STDT_BOOL;
+                            case DataType.STDT_R8: {
+                                X.BoolVal = X.DblVal >= Y.DblVal;
+                                X.DataType = DataType.STDT_BOOL;
                                 break;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно сравнить число и строку" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                error_stream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_BOOL: {
+                                ErrorStream.Write("Невозможно сравнить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно применить >= к строке" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно применить >= к строке" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_BOOL: {
-                            error_stream.Write("Невозможно применить >= к булевому значению" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            ErrorStream.Write("Невозможно применить >= к булевому значению" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         default: {
-                            error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
@@ -1158,46 +1158,46 @@ namespace BASIC_Interpreter_Library {
                     }
 
                     case OUT_AND: {
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                        switch (X.DataType) {
+                        case DataType.STDT_I4: {
+                            ErrorStream.Write("Невозможно применить AND к числу" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_R8: {
-                            error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_R8: {
+                            ErrorStream.Write("Невозможно применить AND к числу" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно применить AND к строке" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно применить AND к строке" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_BOOL: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                ErrorStream.Write("Невозможно применить AND к числу" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_R8: {
-                                error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_R8: {
+                                ErrorStream.Write("Невозможно применить AND к числу" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно применить AND к строке" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно применить AND к строке" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                X.Bool_val = X.Bool_val && Y.Bool_val;
+                            case DataType.STDT_BOOL: {
+                                X.BoolVal = X.BoolVal && Y.BoolVal;
                                 break;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
                         default: {
-                            error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
@@ -1205,53 +1205,53 @@ namespace BASIC_Interpreter_Library {
                     }
 
                     case OUT_OR: {
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                        switch (X.DataType) {
+                        case DataType.STDT_I4: {
+                            ErrorStream.Write("Невозможно применить AND к числу" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_R8: {
-                            error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_R8: {
+                            ErrorStream.Write("Невозможно применить AND к числу" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно применить AND к строке" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно применить AND к строке" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_BOOL: {
-                            switch (Y.Data_Type) {
-                            case Data_type.STDT_I4: {
-                                error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL: {
+                            switch (Y.DataType) {
+                            case DataType.STDT_I4: {
+                                ErrorStream.Write("Невозможно применить AND к числу" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_R8: {
-                                error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_R8: {
+                                ErrorStream.Write("Невозможно применить AND к числу" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно применить AND к строке" + ". Строка " + tok.Line_Number + "\n");
+                            case DataType.STDT_QUOTE: {
+                                ErrorStream.Write("Невозможно применить AND к строке" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
-                            case Data_type.STDT_BOOL: {
-                                X.Bool_val = X.Bool_val || Y.Bool_val;
+                            case DataType.STDT_BOOL: {
+                                X.BoolVal = X.BoolVal || Y.BoolVal;
                                 break;
                             }
                             default: {
-                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                                 return;
                             }
                             }
                             break;
                         }
                         default: {
-                            error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            ErrorStream.Write("Неверный тип данных операнда" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
                         break;
                     }
                     }
-                    exe.push(X);
+                    exe.Push(X);
                     strip_pointer++;
                     break;
                 }
@@ -1259,70 +1259,70 @@ namespace BASIC_Interpreter_Library {
                 case OUT_NOT:
                 case OUT_U_ADD:
                 case OUT_U_SUB: {
-                    exe_pop(ref X);
+                    ExePop(ref X);
                     switch (stt) {
                     case OUT_NOT: {
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4:
-                        case Data_type.STDT_R8:
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно применить НЕ к небулевым значениям" + ". Строка " + tok.Line_Number + "\n");
+                        switch (X.DataType) {
+                        case DataType.STDT_I4:
+                        case DataType.STDT_R8:
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно применить НЕ к небулевым значениям" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
-                        case Data_type.STDT_BOOL: {
-                            X.Bool_val = !X.Bool_val;
+                        case DataType.STDT_BOOL: {
+                            X.BoolVal = !X.BoolVal;
                             break;
                         }
                         }
                         break;
                     }
                     case OUT_U_SUB: {
-                        switch (X.Data_Type) {
-                        case Data_type.STDT_I4: {
-                            X.Int_val = -X.Int_val;
+                        switch (X.DataType) {
+                        case DataType.STDT_I4: {
+                            X.IntVal = -X.IntVal;
                             break;
                         }
-                        case Data_type.STDT_R8: {
-                            X.Dbl_val = -X.Dbl_val;
+                        case DataType.STDT_R8: {
+                            X.DblVal = -X.DblVal;
                             break;
                         }
-                        case Data_type.STDT_BOOL:
-                        case Data_type.STDT_QUOTE: {
-                            error_stream.Write("Невозможно применить унарным минус к нечисловым значениям" + ". Строка " + tok.Line_Number + "\n");
+                        case DataType.STDT_BOOL:
+                        case DataType.STDT_QUOTE: {
+                            ErrorStream.Write("Невозможно применить унарным минус к нечисловым значениям" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         }
                         break;
                     }
                     }
-                    exe.push(X);
+                    exe.Push(X);
                     strip_pointer++;
                     break;
                 }
 
                 case OUT_LABEL: {
                     // на стек помещаем значение метки
-                    X.Int_val = strip[(int)strip_pointer].Int_val;
+                    X.IntVal = strip[(int)strip_pointer].IntVal;
                     // тип значения - константа
                     X.Stt = OUT_I4;
-                    exe.push(X);
+                    exe.Push(X);
                     strip_pointer++;
                     break;
                 }
 
                 case OUT_DEFL: {
-                    exe.pop(ref X);
+                    exe.Pop(ref X);
                     strip_pointer++;
                     break;
                 }
 
                 case OUT_BZ: {
-                    exe_pop(ref Y);
-                    exe_pop(ref X);
-                    if (X.Bool_val == false) {
-                        j = strip.Find_DEF(Y.Int_val);
+                    ExePop(ref Y);
+                    ExePop(ref X);
+                    if (X.BoolVal == false) {
+                        j = strip.FindDEF(Y.IntVal);
                         if (j == -1) {
-                            error_stream.Write("Метка не найдена" + ". Строка " + tok.Line_Number + "\n");
+                            ErrorStream.Write("Метка не найдена" + ". Строка " + tok.LineNumber + "\n");
                             return;
                         }
                         strip_pointer = j;
@@ -1333,10 +1333,10 @@ namespace BASIC_Interpreter_Library {
                 }
 
                 case OUT_BR: {
-                    exe_pop(ref Y);
-                    j = strip.Find_DEF(Y.Int_val);
+                    ExePop(ref Y);
+                    j = strip.FindDEF(Y.IntVal);
                     if (j == -1) {
-                        error_stream.Write("Метка не найдена" + ". Строка " + tok.Line_Number + "\n");
+                        ErrorStream.Write("Метка не найдена" + ". Строка " + tok.LineNumber + "\n");
                         return;
                     }
                     strip_pointer = j;
@@ -1344,26 +1344,26 @@ namespace BASIC_Interpreter_Library {
                 }
 
                 case OUT_PRINT: {
-                    exe_pop(ref Y);
-                    switch (Y.Data_Type) {
-                    case Data_type.STDT_I4: {
-                        parse_stream.Write(Y.Int_val.ToString());
+                    ExePop(ref Y);
+                    switch (Y.DataType) {
+                    case DataType.STDT_I4: {
+                        ParseStream.Write(Y.IntVal.ToString());
                         break;
                     }
-                    case Data_type.STDT_R8: {
-                        parse_stream.Write(Y.Dbl_val.ToString("R", CultureInfo.InvariantCulture));
+                    case DataType.STDT_R8: {
+                        ParseStream.Write(Y.DblVal.ToString("R", CultureInfo.InvariantCulture));
                         break;
                     }
-                    case Data_type.STDT_QUOTE: {
-                        parse_stream.Write(Y.Str_val);
+                    case DataType.STDT_QUOTE: {
+                        ParseStream.Write(Y.StrVal);
                         break;
                     }
-                    case Data_type.STDT_BOOL: {
-                        parse_stream.Write(Y.Bool_val);
+                    case DataType.STDT_BOOL: {
+                        ParseStream.Write(Y.BoolVal);
                         break;
                     }
                     default: {
-                        error_stream.Write("Неверный операнд" + ". Строка " + tok.Line_Number + "\n");
+                        ErrorStream.Write("Неверный операнд" + ". Строка " + tok.LineNumber + "\n");
                         return;
                     }
                     }
@@ -1373,53 +1373,53 @@ namespace BASIC_Interpreter_Library {
                 }
 
                 if (++it_counter > MAX_IT) {
-                    error_stream.Write("Возможный бесконечный цикл. Строка " + tok.Line_Number + "\n");
+                    ErrorStream.Write("Возможный бесконечный цикл. Строка " + tok.LineNumber + "\n");
                     //FlushStreams();
                     return;
                 }
             }
         }
         // извлекает из стека значение
-        void exe_pop(ref Token e) {
-            exe.pop(ref e);
+        private void ExePop(ref Token e) {
+            exe.Pop(ref e);
             if (e.Stt == OUT_I4 || e.Stt == OUT_R8 || e.Stt == OUT_QUOTE) {
             } else {
                 if (e.Stt == OUT_ID) {
-                    long j = syms.find(ref e);
+                    long j = syms.Find(ref e);
                     if (j == ST_NOTFOUND) {
-                        error_stream.Write("Идентификатор \"" + e.Name + "\" не найден" + ". Строка " + tok.Line_Number + "\n");
+                        ErrorStream.Write("Идентификатор \"" + e.Name + "\" не найден" + ". Строка " + tok.LineNumber + "\n");
                         //FlushStreams();
                         return;
                     }
-                    e.Data_Type = syms[(int)j].Data_Type;
-                    switch (e.Data_Type) {
-                    case Data_type.STDT_I4: {
-                        e.Int_val = syms[(int)j].Int_val;
+                    e.DataType = syms[(int)j].DataType;
+                    switch (e.DataType) {
+                    case DataType.STDT_I4: {
+                        e.IntVal = syms[(int)j].IntVal;
                         e.Stt = OUT_I4;
                         break;
                     }
-                    case Data_type.STDT_R8: {
-                        e.Dbl_val = syms[(int)j].Dbl_val;
+                    case DataType.STDT_R8: {
+                        e.DblVal = syms[(int)j].DblVal;
                         e.Stt = OUT_R8;
                         break;
                     }
-                    case Data_type.STDT_QUOTE: {
-                        e.Str_val = syms[(int)j].Str_val;
+                    case DataType.STDT_QUOTE: {
+                        e.StrVal = syms[(int)j].StrVal;
                         e.Stt = OUT_QUOTE;
                         break;
                     }
                     }
                 } else {
-                    error_stream.Write("exe_pop Внутренняя ошибка" + ". Строка " + tok.Line_Number + "\n");
+                    ErrorStream.Write("exe_pop Внутренняя ошибка" + ". Строка " + tok.LineNumber + "\n");
                     //FlushStreams();
                     return;
                 }
             }
         }
         // возвращает очередной токен
-        long next_token() {
+        private long NextToken() {
             Token temp = tok;
-            long result = lex.Next_token(ref tok);
+            long result = lex.GetNextToken(ref tok);
             return result;
         }
     }

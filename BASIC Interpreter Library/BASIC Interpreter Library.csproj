@@ -44,8 +44,8 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ExStack.cs" />
     <Compile Include="Stack.cs" />
-    <Compile Include="Data_type.cs" />
-    <Compile Include="Interpreter_symbol.cs" />
+    <Compile Include="DataType.cs" />
+    <Compile Include="InterpreterSymbol.cs" />
     <Compile Include="Lexan.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strip.cs" />

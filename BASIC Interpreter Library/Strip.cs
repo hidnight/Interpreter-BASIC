@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using static BASIC_Interpreter_Library.Interpreter_symbol;
+using static BASIC_Interpreter_Library.InterpreterSymbol;
 
 namespace BASIC_Interpreter_Library {
     public class Strip {
@@ -24,7 +24,7 @@ namespace BASIC_Interpreter_Library {
             st.Clear();
         }
         // возвращает новый идентификатор метки
-        public int New_label() {
+        public int NewLabel() {
             return ++label;
         }
         public Token this[int index] => st[index];
@@ -35,11 +35,11 @@ namespace BASIC_Interpreter_Library {
             }
         }
         // ищет на ленте определение метки с идентификатором id
-        public int Find_DEF(long id) {
+        public int FindDEF(long id) {
             for (int i = 1; i < Size + 1; i++) {
                 if (st[i].Stt == OUT_END)
                     return -1; // конец ленты
-                if (st[i].Stt == OUT_LABEL && st[i].Int_val == id) {
+                if (st[i].Stt == OUT_LABEL && st[i].IntVal == id) {
                     if (st[i + 1].Stt == OUT_DEFL) {
                         return (i + 2);
                     }
@@ -56,17 +56,17 @@ namespace BASIC_Interpreter_Library {
                 builder.Append(" " + st[i].Stt.ToString());
                 switch (st[i].Stt) {
                 case OUT_QUOTE:
-                    builder.Append(" \"" + st[i].Str_val.Replace("\n", "\\n").Replace("\t", "\\t") + "\"");
+                    builder.Append(" \"" + st[i].StrVal.Replace("\n", "\\n").Replace("\t", "\\t") + "\"");
                     break;
                 case OUT_ID:
                     builder.Append(" " + st[i].Name);
                     break;
                 case OUT_I4:
                 case OUT_LABEL:
-                    builder.Append(" " + st[i].Int_val);
+                    builder.Append(" " + st[i].IntVal);
                     break;
                 case OUT_R8:
-                    builder.Append(" " + st[i].Dbl_val.ToString("R", CultureInfo.InvariantCulture));
+                    builder.Append(" " + st[i].DblVal.ToString("R", CultureInfo.InvariantCulture));
                     break;
                 }
                 builder.AppendLine();

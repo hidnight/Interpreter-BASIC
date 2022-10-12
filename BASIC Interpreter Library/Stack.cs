@@ -21,13 +21,13 @@ namespace BASIC_Interpreter_Library {
         // количество элементов
         public int Size => st.Count;
         // проталкивает элемент
-        public void push(T value) {
+        public void Push(T value) {
             st.Add(value);
             if (depth < Size)
                 depth = Size;
         }
         // выталкивает элемент
-        public T pop() {
+        public T Pop() {
             if (Size < 1)
                 throw new Exception("ststack::pop Стек пуст.");
             T value = st.Last();
