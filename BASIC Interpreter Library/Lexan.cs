@@ -67,8 +67,8 @@ namespace BASIC_Interpreter_Library {
                 tok.Stt = TOK_AS;
                 return 1;
             }
-            if (tok.Str_val.ToLower() == "end_if") {
-                tok.Stt = TOK_END_IF;
+            if (tok.Str_val.ToLower() == "end") {
+                tok.Stt = TOK_END;
                 return 1;
             }
             if (tok.Str_val.ToLower() == "or") {
@@ -85,10 +85,6 @@ namespace BASIC_Interpreter_Library {
             }
             if (tok.Str_val.ToLower() == "while") {
                 tok.Stt = TOK_WHILE;
-                return 1;
-            }
-            if (tok.Str_val.ToLower() == "end_while") {
-                tok.Stt = TOK_END_WHILE;
                 return 1;
             }
             if (tok.Str_val.ToLower() == "if") {

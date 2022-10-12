@@ -25,10 +25,9 @@ namespace BASIC_Interpreter_Library {
         TOK_IF,         // ключевое слово
         TOK_THEN,       // ключевое слово
         TOK_ELSE,       // ключевое слово
-        TOK_END_IF,     // ключевое слово
+        TOK_END,        // ключевое слово
         TOK_PRINT,      // ключевое слово
         TOK_WHILE,      // ключевое слово
-        TOK_END_WHILE,  // ключевое слово
         TOK_STRING,     // ключевое слово
         TOK_LONG,       // ключевое слово
         TOK_REAL,       // ключевое слово
