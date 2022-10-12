@@ -359,7 +359,8 @@ namespace BASIC_Interpreter_Library {
                                 break;
                             }
                             case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сложить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                                X.Data_Type = Data_type.STDT_QUOTE;
+                                X.Str_val = X.Int_val + Y.Str_val;
                                 return;
                             }
                             case Data_type.STDT_BOOL: {
@@ -384,7 +385,8 @@ namespace BASIC_Interpreter_Library {
                                 break;
                             }
                             case Data_type.STDT_QUOTE: {
-                                error_stream.Write("Невозможно сложить число и строку" + ". Строка " + tok.Line_Number + "\n");
+                                X.Data_Type = Data_type.STDT_QUOTE;
+                                X.Str_val = X.Dbl_val + Y.Str_val;
                                 return;
                             }
                             case Data_type.STDT_BOOL: {
@@ -413,7 +415,7 @@ namespace BASIC_Interpreter_Library {
                                 break;
                             }
                             case Data_type.STDT_BOOL: {
-                                X.Str_val += Y.Bool_val.ToString();
+                                X.Str_val += Y.Bool_val;
                                 break;
                             }
                             default: {
@@ -424,8 +426,24 @@ namespace BASIC_Interpreter_Library {
                             break;
                         }
                         case Data_type.STDT_BOOL: {
-                            error_stream.Write("Невозможно сложить с булевым значением" + ". Строка " + tok.Line_Number + "\n");
-                            return;
+                            switch (Y.Data_Type) {
+                            case Data_type.STDT_I4:
+                            case Data_type.STDT_R8:
+                            case Data_type.STDT_BOOL: {
+                                error_stream.Write("Невозможно сложить с булевым значением" + ". Строка " + tok.Line_Number + "\n");
+                                return;
+                            }
+                            case Data_type.STDT_QUOTE: {
+                                X.Data_Type = Data_type.STDT_QUOTE;
+                                X.Str_val = X.Bool_val + Y.Str_val;
+                                break;
+                            }
+                            default: {
+                                error_stream.Write("Неверныйй тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                return;
+                            }
+                            }
+                            break;
                         }
                         default: {
                             error_stream.Write("Неверныйй тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
