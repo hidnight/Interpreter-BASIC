@@ -56,7 +56,7 @@ namespace BASIC_Interpreter_Library {
                 builder.Append(" " + st[i].Stt.ToString());
                 switch (st[i].Stt) {
                 case OUT_QUOTE:
-                    builder.Append(" " + Regex.Unescape(st[i].Str_val));
+                    builder.Append(" \"" + st[i].Str_val.Replace("\n", "\\n").Replace("\t", "\\t") + "\"");
                     break;
                 case OUT_ID:
                     builder.Append(" " + st[i].Name);
