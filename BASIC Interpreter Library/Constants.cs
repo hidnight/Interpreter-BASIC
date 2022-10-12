@@ -16,7 +16,7 @@ namespace BASIC_Interpreter_Library {
         public const byte UNDER = 7; // знак подчеркивания
         public const byte SLASH = 8; // слеш
         public const byte WHITE = 9; // пробельный символ
-        public const byte BSLAS = 10; // обратный слеш
+        public const byte BSLASH = 10; // обратный слеш
         // таблица перекодировки
         public static readonly byte[] TOT = new byte[256] { /* (c) 2003 ReVoL */
             /* управляющие символы */
@@ -35,7 +35,7 @@ namespace BASIC_Interpreter_Library {
             /*  @      A      B      C      D      E      F      G      H      I      J      K      L      M      N      O */
             INVAL, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA,
             /*  P      Q      R      S      T      U      V      W      X      Y      Z      [      \      ]      ^      _ */
-            ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, INVAL, BSLAS, INVAL, INVAL, UNDER,
+            ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, ALPHA, INVAL, BSLASH, INVAL, INVAL, UNDER,
 
             /* строчные буквы, знаки */
             /*  `      a      b      c      d      e      f      g      h      i      j      k      l      m      n      o */

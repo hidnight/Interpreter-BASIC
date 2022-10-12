@@ -186,7 +186,7 @@ namespace BASIC_Interpreter_Library {
                     /*if (cc == '\n') {
 
                     }*/
-                    if (TOT[(byte)cc] == BSLAS) {
+                    if (TOT[(byte)cc] == BSLASH) {
                         NextChar();
                         switch ((char)cc) {
                         case 'n': {
