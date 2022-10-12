@@ -643,7 +643,7 @@ namespace BASIC_Interpreter_Library {
                                 break;
                             }
                             case Data_type.STDT_R8: {
-                                X.Bool_val = X.Int_val == Y.Dbl_val;
+                                X.Bool_val = ((double)X.Int_val) == Y.Dbl_val;
                                 X.Data_Type = Data_type.STDT_BOOL;
                                 break;
                             }
@@ -665,7 +665,7 @@ namespace BASIC_Interpreter_Library {
                         case Data_type.STDT_R8: {
                             switch (Y.Data_Type) {
                             case Data_type.STDT_I4: {
-                                X.Bool_val = X.Dbl_val == Y.Int_val;
+                                X.Bool_val = X.Dbl_val == (double)Y.Int_val;
                                 X.Data_Type = Data_type.STDT_BOOL;
                                 break;
                             }
@@ -1130,6 +1130,100 @@ namespace BASIC_Interpreter_Library {
                         case Data_type.STDT_BOOL: {
                             error_stream.Write("Невозможно применить >= к булевому значению" + ". Строка " + tok.Line_Number + "\n");
                             return;
+                        }
+                        default: {
+                            error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            return;
+                        }
+                        }
+                        break;
+                    }
+
+                    case OUT_AND: {
+                        switch (X.Data_Type) {
+                        case Data_type.STDT_I4: {
+                            error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                            return;
+                        }
+                        case Data_type.STDT_R8: {
+                            error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                            return;
+                        }
+                        case Data_type.STDT_QUOTE: {
+                            error_stream.Write("Невозможно применить AND к строке" + ". Строка " + tok.Line_Number + "\n");
+                            return;
+                        }
+                        case Data_type.STDT_BOOL: {
+                            switch (Y.Data_Type) {
+                            case Data_type.STDT_I4: {
+                                error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                                return;
+                            }
+                            case Data_type.STDT_R8: {
+                                error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                                return;
+                            }
+                            case Data_type.STDT_QUOTE: {
+                                error_stream.Write("Невозможно применить AND к строке" + ". Строка " + tok.Line_Number + "\n");
+                                return;
+                            }
+                            case Data_type.STDT_BOOL: {
+                                X.Bool_val = X.Bool_val && Y.Bool_val;
+                                break;
+                            }
+                            default: {
+                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                return;
+                            }
+                            }
+                            break;
+                        }
+                        default: {
+                            error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                            return;
+                        }
+                        }
+                        break;
+                    }
+
+                    case OUT_OR: {
+                        switch (X.Data_Type) {
+                        case Data_type.STDT_I4: {
+                            error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                            return;
+                        }
+                        case Data_type.STDT_R8: {
+                            error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                            return;
+                        }
+                        case Data_type.STDT_QUOTE: {
+                            error_stream.Write("Невозможно применить AND к строке" + ". Строка " + tok.Line_Number + "\n");
+                            return;
+                        }
+                        case Data_type.STDT_BOOL: {
+                            switch (Y.Data_Type) {
+                            case Data_type.STDT_I4: {
+                                error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                                return;
+                            }
+                            case Data_type.STDT_R8: {
+                                error_stream.Write("Невозможно применить AND к числу" + ". Строка " + tok.Line_Number + "\n");
+                                return;
+                            }
+                            case Data_type.STDT_QUOTE: {
+                                error_stream.Write("Невозможно применить AND к строке" + ". Строка " + tok.Line_Number + "\n");
+                                return;
+                            }
+                            case Data_type.STDT_BOOL: {
+                                X.Bool_val = X.Bool_val || Y.Bool_val;
+                                break;
+                            }
+                            default: {
+                                error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
+                                return;
+                            }
+                            }
+                            break;
                         }
                         default: {
                             error_stream.Write("Неверный тип данных операнда" + ". Строка " + tok.Line_Number + "\n");
