@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BASIC_Interpreter_Library {
+﻿namespace BASIC_Interpreter_Library {
     public enum Interpreter_symbol {
         OUT_START = 9997,
         // комментарий

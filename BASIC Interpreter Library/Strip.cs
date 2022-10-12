@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using static BASIC_Interpreter_Library.Constants;
 using static BASIC_Interpreter_Library.Interpreter_symbol;
 
 namespace BASIC_Interpreter_Library {
