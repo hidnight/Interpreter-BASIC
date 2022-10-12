@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Интерпретатор_языка_BASIC"
         xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" x:Class="Интерпретатор_языка_BASIC.MainWindow"
         mc:Ignorable="d"
-        Title="Интерпретатор языка BASIC" Height="319.333" Width="684.667" MinWidth="800" MinHeight="450" Icon="icon.png">
+        Title="Интерпретатор языка BASIC" Height="418" Width="768.667" MinWidth="800" MinHeight="450" Icon="icon.png">
     <Grid Background="#FFF1F1F1">
         <TextBox x:Name="Output" Margin="10,0,28,10" TextWrapping="Wrap" Height="135" VerticalAlignment="Bottom" FontFamily="Courier New" IsReadOnly="True" IsReadOnlyCaretVisible="True" BorderBrush="{x:Null}" ForceCursor="True" Cursor="IBeam"/>
         <avalonedit:TextEditor x:Name="Code" Margin="10,32,10,150" Background="White" FontFamily="Courier New" LineNumbersForeground="Black" BorderBrush="Black" FontSize="14" ShowLineNumbers="True" Foreground="Black"/>
@@ -17,6 +17,7 @@
             <MenuItem x:Name="Interpreter" Header="Интерпретировать" Height="17" Width="116" Click="Interpreter_Click"/>
             <MenuItem Header="Настройки" AllowDrop="True">
                 <MenuItem Header="Показывать отладочную информацию" IsCheckable="True" x:Name="DebugInfo"/>
+                <MenuItem Click="BigFont_Click" Header="Большой шрифт" IsCheckable="True" x:Name="BigFont"/>
             </MenuItem>
         </Menu>
     </Grid>
