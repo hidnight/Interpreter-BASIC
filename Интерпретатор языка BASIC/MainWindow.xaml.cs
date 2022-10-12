@@ -23,9 +23,6 @@ namespace Интерпретатор_языка_BASIC {
             saveFileDialog.RestoreDirectory = false;
             saveFileDialog.AddExtension = true;
             saveFileDialog.DefaultExt = "txt";
-            //openFileDialog.Options
-            //Code.Text = "Dim A As Long\nA = 1\nIf A <> 0 Then\nPrint (3 + A * 5)\nElse\nPrint(0)\nEnd_If\n";
-            Code.Text += "Dim A As Long\nA=10\nwhile A > 0\nprint A\n A = A - 1\nend_while\n";
         }
 
         private void Interpreter_Click(object sender, RoutedEventArgs e) {
