@@ -318,7 +318,7 @@ namespace BASIC_Interpreter_Library {
                             break;
                         }
                         case Data_type.STDT_R8: {
-                            syms[(int)j].Str_val = Y.Dbl_val.ToString();
+                            syms[(int)j].Str_val = Y.Dbl_val.ToString("R", CultureInfo.InvariantCulture);
                             break;
                         }
                         case Data_type.STDT_QUOTE: {
@@ -358,7 +358,8 @@ namespace BASIC_Interpreter_Library {
                                 break;
                             }
                             case Data_type.STDT_R8: {
-                                X.Int_val += (int)Y.Dbl_val;
+                                X.Data_Type = Data_type.STDT_R8;
+                                X.Dbl_val = X.Int_val + Y.Dbl_val;
                                 break;
                             }
                             case Data_type.STDT_QUOTE: {
@@ -408,7 +409,7 @@ namespace BASIC_Interpreter_Library {
                                 break;
                             }
                             case Data_type.STDT_R8: {
-                                X.Str_val += Y.Dbl_val.ToString();
+                                X.Str_val += Y.Dbl_val.ToString("R", CultureInfo.InvariantCulture);
                                 break;
                             }
                             case Data_type.STDT_QUOTE: {
@@ -459,7 +460,8 @@ namespace BASIC_Interpreter_Library {
                                 break;
                             }
                             case Data_type.STDT_R8: {
-                                X.Int_val = (int)(X.Int_val - Y.Dbl_val);
+                                X.Data_Type = Data_type.STDT_R8;
+                                X.Dbl_val = X.Int_val - Y.Dbl_val;
                                 break;
                             }
                             default: {
@@ -523,7 +525,8 @@ namespace BASIC_Interpreter_Library {
                                 break;
                             }
                             case Data_type.STDT_R8: {
-                                X.Int_val = (int)(X.Int_val * Y.Dbl_val);
+                                X.Data_Type = Data_type.STDT_R8;
+                                X.Dbl_val = X.Int_val * Y.Dbl_val;
                                 break;
                             }
                             default: {
@@ -590,7 +593,8 @@ namespace BASIC_Interpreter_Library {
                                 break;
                             }
                             case Data_type.STDT_R8: {
-                                X.Int_val = (int)(X.Int_val / Y.Dbl_val);
+                                X.Data_Type = Data_type.STDT_R8;
+                                X.Dbl_val = X.Int_val / Y.Dbl_val;
                                 break;
                             }
                             default: {

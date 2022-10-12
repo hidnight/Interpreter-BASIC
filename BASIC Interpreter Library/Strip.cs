@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using static BASIC_Interpreter_Library.Constants;
 using static BASIC_Interpreter_Library.Interpreter_symbol;
@@ -65,7 +66,7 @@ namespace BASIC_Interpreter_Library {
                     builder.Append(" " + st[i].Int_val);
                     break;
                 case OUT_R8:
-                    builder.Append(" " + st[i].Dbl_val);
+                    builder.Append(" " + st[i].Dbl_val.ToString("R", CultureInfo.InvariantCulture));
                     break;
                 }
                 builder.AppendLine();
