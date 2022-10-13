@@ -126,16 +126,5 @@ namespace Интерпретатор_языка_BASIC {
             Code.TextArea.FontSize = BigFont.IsChecked ? 24 : 14;
             Output.FontSize = BigFont.IsChecked ? 24 : 14;
         }
-
-        private void OutputMouseEnter(object sender, System.Windows.Input.MouseEventArgs e) {
-            //double temp;
-            //temp = Output.ActualHeight;
-            //Output.Height = Code.ActualHeight;
-            //Code.Height = temp;
-        }
-
-        private void OutputMouseLeave(object sender, System.Windows.Input.MouseEventArgs e) {
-
-        }
     }
 }
