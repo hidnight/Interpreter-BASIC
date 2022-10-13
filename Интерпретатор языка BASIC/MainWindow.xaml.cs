@@ -78,8 +78,9 @@ namespace Интерпретатор_языка_BASIC {
                     Output.Text += "\n-------------------------------------------------\n\n\n";
                 }
                 Output.Text += new StreamReader(parseStream).ReadToEnd();
-                File.AppendAllText(System.Windows.Forms.Application.ExecutablePath.Replace("exe", "log"),
-                    DateTime.Now.ToString("G") + "\n" + Output.Text);
+                string log = System.Windows.Forms.Application.ExecutablePath.Replace("exe", "log");
+                File.AppendAllText(log,
+                    "[" + DateTime.Now.ToString("G") + "]" + "\n" + Output.Text + "\n\n");
                 parseStreamWriter.Dispose();
                 outputStreamWriter.Dispose();
                 errorStreamWriter.Dispose();
