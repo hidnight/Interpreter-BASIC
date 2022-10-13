@@ -361,7 +361,7 @@ namespace BASIC_Interpreter_Library {
                             case DataType.STDT_QUOTE: {
                                 X.DataType = DataType.STDT_QUOTE;
                                 X.StrVal = X.IntVal + Y.StrVal;
-                                return;
+                                break;
                             }
                             case DataType.STDT_BOOL: {
                                 ErrorStream.Write("Невозможно сложить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
@@ -387,7 +387,7 @@ namespace BASIC_Interpreter_Library {
                             case DataType.STDT_QUOTE: {
                                 X.DataType = DataType.STDT_QUOTE;
                                 X.StrVal = X.DblVal + Y.StrVal;
-                                return;
+                                break;
                             }
                             case DataType.STDT_BOOL: {
                                 ErrorStream.Write("Невозможно сложить число и булево значение" + ". Строка " + tok.LineNumber + "\n");
