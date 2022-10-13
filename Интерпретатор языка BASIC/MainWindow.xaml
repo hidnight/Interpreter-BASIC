@@ -6,16 +6,22 @@
         xmlns:local="clr-namespace:Интерпретатор_языка_BASIC"
         xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" x:Class="Интерпретатор_языка_BASIC.MainWindow"
         mc:Ignorable="d"
-        Title="Интерпретатор языка BASIC" Height="418" Width="768.667" MinWidth="800" MinHeight="450" Icon="icon.png">
-    <Grid Background="#FFF1F1F1">
-        <TextBox x:Name="Output" Margin="10,0,28,10" TextWrapping="Wrap" Height="135" VerticalAlignment="Bottom" FontFamily="Courier New" IsReadOnly="True" IsReadOnlyCaretVisible="True" BorderBrush="{x:Null}" ForceCursor="True" Cursor="IBeam"/>
-        <avalonedit:TextEditor x:Name="Code" Margin="10,32,10,150" Background="White" FontFamily="Courier New" LineNumbersForeground="Black" BorderBrush="Black" FontSize="14" ShowLineNumbers="True" Foreground="Black"/>
-        <Menu Height="17" Margin="10,10,10,0" VerticalAlignment="Top">
-            <MenuItem x:Name="Open" Header="Открыть..." Height="17" Width="66" Click="OpenClick"/>
-            <MenuItem x:Name="Save" Header="Сохранить" Height="17" Width="68" Click="SaveClick"/>
-            <MenuItem x:Name="SaveAs" Header="Сохранить как..." Height="17" Width="100" Click="SaveAsClick"/>
-            <MenuItem x:Name="Interpreter" Header="Интерпретировать" Height="17" Width="116" Click="InterpreterClick"/>
-            <MenuItem Header="Настройки" AllowDrop="True">
+        Title="Интерпретатор языка BASIC" Height="381.667" Width="757.333" MinWidth="800" MinHeight="450" Icon="icon.png">
+    <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" MinHeight="75"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" MinHeight="50"/>
+        </Grid.RowDefinitions>
+        <avalonedit:TextEditor Grid.Row="0" x:Name="Code" Margin="10,32,10,10" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" FontFamily="Courier New" LineNumbersForeground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" BorderBrush="Black" FontSize="14" ShowLineNumbers="True" Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" MinHeight="10"/>
+        <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="5" Background="#FFE0E0E0" Margin="10,0"/>
+        <TextBox Grid.Row="2" x:Name="Output" Margin="10,10.333,10.333,9.667" TextWrapping="Wrap" FontFamily="Courier New" IsReadOnly="True" IsReadOnlyCaretVisible="True" BorderBrush="{x:Null}" ForceCursor="True" Cursor="IBeam" MinHeight="10" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Foreground="{DynamicResource {x:Static SystemColors.MenuTextBrushKey}}"/>
+        <Menu Height="22" Margin="10,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+            <MenuItem x:Name="Open" Header="Открыть..." Height="21" Width="66" Click="OpenClick" Foreground="{DynamicResource {x:Static SystemColors.MenuTextBrushKey}}"/>
+            <MenuItem x:Name="Save" Header="Сохранить" Height="20" Width="68" Click="SaveClick" Foreground="{DynamicResource {x:Static SystemColors.MenuTextBrushKey}}"/>
+            <MenuItem x:Name="SaveAs" Header="Сохранить как..." Height="20" Width="100" Click="SaveAsClick" Foreground="{DynamicResource {x:Static SystemColors.MenuTextBrushKey}}"/>
+            <MenuItem x:Name="Interpreter" Header="Интерпретировать" Height="20" Width="116" Click="InterpreterClick" Foreground="{DynamicResource {x:Static SystemColors.MenuTextBrushKey}}"/>
+            <MenuItem Header="Настройки" AllowDrop="True" Foreground="{DynamicResource {x:Static SystemColors.MenuTextBrushKey}}">
                 <MenuItem Header="Показывать отладочную информацию" IsCheckable="True" x:Name="DebugInfo"/>
                 <MenuItem Click="BigFontClick" Header="Большой шрифт" IsCheckable="True" x:Name="BigFont"/>
             </MenuItem>
