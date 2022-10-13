@@ -13,14 +13,16 @@ namespace Интерпретатор_языка_BASIC {
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-        string FilePath = "";
-        OpenFileDialog openFileDialog;
-        SaveFileDialog saveFileDialog;
+        private string FilePath = "";
+        private OpenFileDialog openFileDialog;
+        private SaveFileDialog saveFileDialog;
 
-        private void LoadHighlighting(ref TextEditor editor, string file = "BASIC.xshd") {
+        private void LoadHighlighting(ref TextEditor editor,
+            string file = "BASIC.xshd") {
             Stream xshd_stream = File.OpenRead(file);
             XmlTextReader xshd_reader = new XmlTextReader(xshd_stream);
-            editor.SyntaxHighlighting = ICSharpCode.AvalonEdit.Highlighting.Xshd.HighlightingLoader.Load(xshd_reader, HighlightingManager.Instance);
+            editor.SyntaxHighlighting = ICSharpCode.AvalonEdit.Highlighting.Xshd.
+                HighlightingLoader.Load(xshd_reader, HighlightingManager.Instance);
             xshd_reader.Close();
             xshd_stream.Close();
         }
@@ -42,7 +44,7 @@ namespace Интерпретатор_языка_BASIC {
             }
         }
 
-        private void Interpreter_Click(object sender, RoutedEventArgs e) {
+        private void InterpreterClick(object sender, RoutedEventArgs e) {
             Output.Text = "";
             using (MemoryStream inputStream = new MemoryStream(Encoding.ASCII.GetBytes(Code.Text)),
                 outputStream = new MemoryStream(),
@@ -53,9 +55,11 @@ namespace Интерпретатор_языка_BASIC {
                        outputStreamWriter = new StreamWriter(outputStream),
                        errorStreamWriter = new StreamWriter(errorStream);
                 try {
-                    Lexan lex = new Lexan(new StreamReader(inputStream, Encoding.ASCII), ref errorStreamWriter);
-                    Syntaxan syntaxan = new Syntaxan(ref lex, ref parseStreamWriter, ref outputStreamWriter);
-                    syntaxan.parse();
+                    Lexan lex = new Lexan(new StreamReader(inputStream, Encoding.ASCII),
+                        ref errorStreamWriter);
+                    Syntaxan syntaxan = new Syntaxan(ref lex, ref parseStreamWriter,
+                        ref outputStreamWriter);
+                    syntaxan.Parse();
                 } catch (Exception ex) {
                     Output.Text += "\n\nОШИБКА\n" + ex.Message;
                 }
@@ -74,13 +78,15 @@ namespace Интерпретатор_языка_BASIC {
                     Output.Text += "\n-------------------------------------------------\n\n\n";
                 }
                 Output.Text += new StreamReader(parseStream).ReadToEnd();
+                File.AppendAllText(System.Windows.Forms.Application.ExecutablePath.Replace("exe", "log"),
+                    DateTime.Now.ToString("G") + "\n" + Output.Text);
                 parseStreamWriter.Dispose();
                 outputStreamWriter.Dispose();
                 errorStreamWriter.Dispose();
             }
         }
 
-        private void Open_Click(object sender, RoutedEventArgs e) {
+        private void OpenClick(object sender, RoutedEventArgs e) {
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
                 FilePath = openFileDialog.FileName;
                 try {
@@ -91,9 +97,9 @@ namespace Интерпретатор_языка_BASIC {
             }
         }
 
-        private void Save_Click(object sender, RoutedEventArgs e) {
+        private void SaveClick(object sender, RoutedEventArgs e) {
             if (FilePath == "") {
-                SaveAs_Click(sender, e);
+                SaveAsClick(sender, e);
                 return;
             }
             if (Code.IsModified) {
@@ -105,7 +111,7 @@ namespace Интерпретатор_языка_BASIC {
             }
         }
 
-        private void SaveAs_Click(object sender, RoutedEventArgs e) {
+        private void SaveAsClick(object sender, RoutedEventArgs e) {
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
                 FilePath = saveFileDialog.FileName;
                 try {
@@ -116,9 +122,20 @@ namespace Интерпретатор_языка_BASIC {
             }
         }
 
-        private void BigFont_Click(object sender, RoutedEventArgs e) {
+        private void BigFontClick(object sender, RoutedEventArgs e) {
             Code.TextArea.FontSize = BigFont.IsChecked ? 24 : 14;
             Output.FontSize = BigFont.IsChecked ? 24 : 14;
+        }
+
+        private void OutputMouseEnter(object sender, System.Windows.Input.MouseEventArgs e) {
+            //double temp;
+            //temp = Output.ActualHeight;
+            //Output.Height = Code.ActualHeight;
+            //Code.Height = temp;
+        }
+
+        private void OutputMouseLeave(object sender, System.Windows.Input.MouseEventArgs e) {
+
         }
     }
 }

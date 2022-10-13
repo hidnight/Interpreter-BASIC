@@ -11,13 +11,13 @@
         <TextBox x:Name="Output" Margin="10,0,28,10" TextWrapping="Wrap" Height="135" VerticalAlignment="Bottom" FontFamily="Courier New" IsReadOnly="True" IsReadOnlyCaretVisible="True" BorderBrush="{x:Null}" ForceCursor="True" Cursor="IBeam"/>
         <avalonedit:TextEditor x:Name="Code" Margin="10,32,10,150" Background="White" FontFamily="Courier New" LineNumbersForeground="Black" BorderBrush="Black" FontSize="14" ShowLineNumbers="True" Foreground="Black"/>
         <Menu Height="17" Margin="10,10,10,0" VerticalAlignment="Top">
-            <MenuItem x:Name="Open" Header="Открыть..." Height="17" Width="66" Click="Open_Click"/>
-            <MenuItem x:Name="Save" Header="Сохранить" Height="17" Width="68" Click="Save_Click"/>
-            <MenuItem x:Name="SaveAs" Header="Сохранить как..." Height="17" Width="100" Click="SaveAs_Click"/>
-            <MenuItem x:Name="Interpreter" Header="Интерпретировать" Height="17" Width="116" Click="Interpreter_Click"/>
+            <MenuItem x:Name="Open" Header="Открыть..." Height="17" Width="66" Click="OpenClick"/>
+            <MenuItem x:Name="Save" Header="Сохранить" Height="17" Width="68" Click="SaveClick"/>
+            <MenuItem x:Name="SaveAs" Header="Сохранить как..." Height="17" Width="100" Click="SaveAsClick"/>
+            <MenuItem x:Name="Interpreter" Header="Интерпретировать" Height="17" Width="116" Click="InterpreterClick"/>
             <MenuItem Header="Настройки" AllowDrop="True">
                 <MenuItem Header="Показывать отладочную информацию" IsCheckable="True" x:Name="DebugInfo"/>
-                <MenuItem Click="BigFont_Click" Header="Большой шрифт" IsCheckable="True" x:Name="BigFont"/>
+                <MenuItem Click="BigFontClick" Header="Большой шрифт" IsCheckable="True" x:Name="BigFont"/>
             </MenuItem>
         </Menu>
     </Grid>
