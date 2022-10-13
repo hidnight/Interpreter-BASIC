@@ -78,17 +78,17 @@ namespace BASIC_Interpreter_Library {
                     } else {
                         t = SYNTA[s - TOK_LAST - 1][(int)tok.Stt];
                     }
-                    ErrorStream.Write("\n Ожидалось = " + s.ToString() + "\n");
-                    ErrorStream.Write("\n Получено = " + tok.Stt.ToString() + "\n");
-                    ErrorStream.Write("\n t = " + t.ToString() + "\n");
+                    ErrorStream.Write("\n На стеке = " + s.ToString());
+                    ErrorStream.Write("\n На входе = " + tok.Stt.ToString());
+                    ErrorStream.Write("\n t = " + t.ToString());
                 } catch (Exception) {
                     throw;
                 }
                 // анализ управляющего значения
                 if (t <= 0) {
                     // ошибка
-                    ErrorStream.Write("\nОшибка синтаксического анализа. =" + t + ".\n\n");
-                    ParseStream.Write("Ошибка синтаксического анализа.");
+                    ErrorStream.Write("\nОшибка синтаксического анализа. t =" + t + ".\n\n");
+                    ParseStream.Write("\nОшибка синтаксического анализа.");
                     //FlushStreams();
                     return 0;
                 } else {
@@ -386,7 +386,7 @@ namespace BASIC_Interpreter_Library {
                             }
                             case DataType.STDT_QUOTE: {
                                 X.DataType = DataType.STDT_QUOTE;
-                                X.StrVal = X.DblVal + Y.StrVal;
+                                X.StrVal = X.DblVal.ToString("R", CultureInfo.InvariantCulture) + Y.StrVal;
                                 break;
                             }
                             case DataType.STDT_BOOL: {
