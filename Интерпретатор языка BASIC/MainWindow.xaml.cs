@@ -29,14 +29,16 @@ namespace Интерпретатор_языка_BASIC {
 
         public MainWindow() {
             InitializeComponent();
-            openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = System.Windows.Forms.Application.StartupPath;
-            openFileDialog.RestoreDirectory = true;
-            saveFileDialog = new SaveFileDialog();
-            saveFileDialog.InitialDirectory = System.Windows.Forms.Application.StartupPath;
-            saveFileDialog.RestoreDirectory = false;
-            saveFileDialog.AddExtension = true;
-            saveFileDialog.DefaultExt = "txt";
+            openFileDialog = new OpenFileDialog {
+                InitialDirectory = System.Windows.Forms.Application.StartupPath,
+                RestoreDirectory = true
+            };
+            saveFileDialog = new SaveFileDialog {
+                InitialDirectory = System.Windows.Forms.Application.StartupPath,
+                RestoreDirectory = false,
+                AddExtension = true,
+                DefaultExt = "txt"
+            };
             try {
                 LoadHighlighting(ref Code);
             } catch (Exception ex) {
