@@ -205,6 +205,7 @@ namespace BASIC_Interpreter_Library {
                     ErrorStream.Write("\nВыполнение завершено.\n\n");
                     return;
                 }
+                // объявление
                 case OUT_ID:
                 case OUT_I4:
                 case OUT_LONG:

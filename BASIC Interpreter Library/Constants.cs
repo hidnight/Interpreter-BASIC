@@ -18,7 +18,7 @@ namespace BASIC_Interpreter_Library {
         public const byte WHITE = 9; // пробельный символ
         public const byte BSLASH = 10; // обратный слеш
         // таблица перекодировки
-        public static readonly byte[] TOT = new byte[256] { /* (c) 2003 ReVoL */
+        public static readonly byte[] TOT = new byte[256] {
             /* управляющие символы */
             /* 00     01     02     03     04     05     06     07     08     TAB    LF     0B     0C     CR     0E     0F */
             INVAL, INVAL, INVAL, INVAL, INVAL, INVAL, INVAL, INVAL, INVAL, WHITE, INVAL, INVAL, INVAL, WHITE, INVAL, INVAL,

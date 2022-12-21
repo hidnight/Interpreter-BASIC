@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /Интерпретатор языка BASIC/BASIC Interpreter Library.dll
+/ICSharpCode.AvalonEdit.xml
+*.zip

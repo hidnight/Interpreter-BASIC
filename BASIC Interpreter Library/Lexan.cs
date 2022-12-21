@@ -126,7 +126,7 @@ namespace BASIC_Interpreter_Library {
                     break;
                 }
                 case CHDOT: {
-                    return IsReal(ref tok, 0);
+                    return IsReal(ref tok);
                 }
                 default: {
                     if (tok.DblVal != 0.0 && tok.Stt != TOK_UNKNOWN && tok.Stt == TOK_I4) {
@@ -140,7 +140,7 @@ namespace BASIC_Interpreter_Library {
             }
         }
         // разбирает вещественную часть числа
-        private int IsReal(ref Token tok, int must) {
+        private int IsReal(ref Token tok) {
             tok.Stt = TOK_R8;
             tok.DataType = DataType.STDT_R8;
             double number = 0.0;
@@ -150,7 +150,6 @@ namespace BASIC_Interpreter_Library {
                 NextChar();
                 switch (TOT[(byte)cc]) {
                 case DIGIT: {
-                    must = 0;
                     number *= 10;
                     number += cc - '0';
                     div++;
@@ -347,7 +346,7 @@ namespace BASIC_Interpreter_Library {
             case DIGIT:
                 return IsNumber(ref tok);
             case CHDOT:
-                return IsReal(ref tok, 1);
+                return IsReal(ref tok);
             case QUOTE:
                 return IsQuote(ref tok);
             default:
