@@ -114,7 +114,7 @@ namespace BASIC_Interpreter_Library {
                                     bt = RULE[(int)t][i];
                                     sta.Push(bt);
                                 }
-                                ErrorStream.Write("Правило " + t + "->");
+                                ErrorStream.Write("\n\nПравило " + t + "->");
                                 for (i = 0; i < n; i++) {
                                     ErrorStream.Write(" " + RULE[t][i].ToString() + " ");
                                 }

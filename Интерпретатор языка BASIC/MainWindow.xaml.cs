@@ -61,16 +61,16 @@ namespace Интерпретатор_языка_BASIC {
                         ref errorStreamWriter);
                     Syntaxan syntaxan = new Syntaxan(ref lex, ref parseStreamWriter,
                         ref outputStreamWriter);
-                    syntaxan.Parse();
+                    _ = syntaxan.Parse();
                 } catch (Exception ex) {
                     Output.Text += "\n\nОШИБКА\n" + ex.Message;
                 }
                 parseStreamWriter.Flush();
                 outputStreamWriter.Flush();
                 errorStreamWriter.Flush();
-                errorStream.Seek(0, SeekOrigin.Begin);
-                parseStream.Seek(0, SeekOrigin.Begin);
-                outputStream.Seek(0, SeekOrigin.Begin);
+                _ = errorStream.Seek(0, SeekOrigin.Begin);
+                _ = parseStream.Seek(0, SeekOrigin.Begin);
+                _ = outputStream.Seek(0, SeekOrigin.Begin);
                 if (DebugInfo.IsChecked) {
                     Output.Text += "\n------------- Отладочная информация -------------\n";
                     Output.Text += "************* Лексический анализатор ************\n";
@@ -95,7 +95,7 @@ namespace Интерпретатор_языка_BASIC {
                 try {
                     Code.Text = File.ReadAllText(FilePath/*, Encoding.ASCII*/);
                 } catch (Exception ex) {
-                    System.Windows.Forms.MessageBox.Show(ex.Message);
+                    _ = System.Windows.Forms.MessageBox.Show(ex.Message);
                 }
             }
         }
@@ -108,8 +108,8 @@ namespace Интерпретатор_языка_BASIC {
             if (Code.IsModified) {
                 try {
                     File.WriteAllText(FilePath, Code.Text, Encoding.ASCII);
-                } catch(Exception ex) {
-                    System.Windows.Forms.MessageBox.Show(ex.Message);
+                } catch (Exception ex) {
+                    _ = System.Windows.Forms.MessageBox.Show(ex.Message);
                 }
             }
         }
@@ -120,7 +120,7 @@ namespace Интерпретатор_языка_BASIC {
                 try {
                     File.WriteAllText(FilePath, Code.Text, Encoding.ASCII);
                 } catch (Exception ex) {
-                    System.Windows.Forms.MessageBox.Show(ex.Message);
+                    _ = System.Windows.Forms.MessageBox.Show(ex.Message);
                 }
             }
         }
