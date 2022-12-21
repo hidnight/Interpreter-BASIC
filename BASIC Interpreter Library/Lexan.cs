@@ -325,6 +325,12 @@ namespace BASIC_Interpreter_Library {
 
                 } else if ((char)((byte)cc) == '\'') {
                     InterpreterSymbol result = GetComment();
+                    // строку подсчитываем
+                    lineNumber++;
+                    // в языке есть токен LF
+                    tok.Stt = TOK_LF;
+                    NextChar();
+                    return 1;
                     // comment пропускаем
                 } else if (cc < 33) {
                     // управляющие символы и пробел пропускаем
